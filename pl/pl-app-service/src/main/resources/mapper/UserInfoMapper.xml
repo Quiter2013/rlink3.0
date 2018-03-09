@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.user.dao.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.user.entity.UserInfo" >
+    <id column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
+    <result column="LOGIN_PWD" property="loginPwd" jdbcType="CHAR" />
+    <result column="EMAIL" property="email" jdbcType="CHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER" property="creater" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    USER_ID, USER_NAME, LOGIN_ACCOUNT, LOGIN_PWD, EMAIL, STATE, CREATE_TIME, CREATER
+  </sql>
+  
+  <select id="queryUserByCompanyId" resultMap="BaseResultMap" parameterType="java.lang.String">
+      select user_.* from  tbs_pl_user_base_info user_ 
+	LEFT JOIN tbs_pl_group_member member on user_.USER_ID = member.USER_ID
+	where member.GROUP_ID = #{companyId,jdbcType=CHAR};
+  </select>
+  
+  <select id="queryUserByIds" resultMap="BaseResultMap" parameterType="java.util.List">
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_user_base_info
+    where USER_ID in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+           #{item}       
+     </foreach>
+  </select>
+
+
+</mapper>

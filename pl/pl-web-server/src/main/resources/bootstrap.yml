@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: pl-server
+  cloud:
+    config:
+      profile: dev
+      discovery:
+        enabled: true
+        service-id: config-server
+      name: pl-jdbc
+  datasource:
+    name: test
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: ${jdbc.driverClassName}
+    druid:
+      url: ${jdbc.url}
+      username: ${jdbc.username}
+      password: ${jdbc.password}
+      initial-size: ${jdbc.pool.initialSize}
+      max-active: ${jdbc.pool.maxActive}
+      min-idle: ${jdbc.pool.minIdle}
+      max-wait: ${jdbc.pool.maxWait}
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: ${jdbc.pool.maxOpenPreparedStatements}
+      time-between-eviction-runs-millis: ${jdbc.pool.timeBetweenEvictionRunsMillis}
+      min-evictable-idle-time-millis: ${jdbc.pool.minEvictableIdleTimeMillis}
+      validation-query: ${jdbc.pool.validationQuery}
+      test-while-idle: ${jdbc.pool.testWhileIdle}
+      test-on-borrow: ${jdbc.pool.testOnBorrow}
+      test-on-return: ${jdbc.pool.testOnReturn}
+      stat-view-servlet:
+          enabled: true
+          url-pattern: /druid/*
+          #login-username: admin
+          #login-password: admin
+      filter:
+          stat:
+              log-slow-sql: true
+              slow-sql-millis: 1000
+              merge-sql: true
+          wall:
+              config:
+                  multi-statement-allow: true
+
+
+mybatis:
+    mapper-locations: classpath:mapper/**/*.xml
+mapper:
+    #mappers:
+     #   - com.robustel.pl.app.user.dao.UserInfoMapper
+    not-empty: false
+    identity: MYSQL
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+
+eureka:
+  client:
+    service-url:
+     defaultZone: http://discovery:9761/eureka/
+endpoints:
+  shutdown:
+    enabled: true
+
+#logging:
+  #level:
+     #org.spring.springboot.dao: DEBUG
+  #file: logs/spring-boot-logging.log

@@ -1,0 +1,11 @@
+server:
+  port: 9801
+  #port: ${app.manage.port}
+url: http://github.com
+management:
+  security:
+    enabled: false
+security:
+  basic:
+    enabled: false
+debug: true

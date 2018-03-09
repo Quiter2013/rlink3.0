@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>package</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+   
+    <dependencySets>
+        <dependencySet>
+            <!-- 不使用项目的artifact，第三方jar不要解压，打包进zip文件的lib目录 -->  
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <scope>runtime</scope>
+            <unpack>false</unpack>
+            <excludes>
+                <exclude>com.robustel.pl:pl-util</exclude>
+            </excludes>
+        </dependencySet>
+        <!-- 将子模块中的配置文件解压打进压缩包的config目录下 -->
+        <dependencySet>
+            <scope>runtime</scope>  
+            <unpack>true</unpack> 
+            <outputDirectory>conf</outputDirectory>
+            
+            <unpackOptions>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+                <excludes>
+                    <exclude>**/pom.xml</exclude>
+                    <exclude>**/pom.properties</exclude>
+                </excludes>
+            </unpackOptions>
+            <includes>
+                <include>com.robustel.pl:*</include>
+            </includes>
+             <excludes>
+                <exclude>com.robustel.pl:pl-util</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+     <fileSets>
+        <fileSet>
+            <directory>src/test/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>  
+        </fileSet>
+        <fileSet>
+            <directory>src/test/resources/config</directory>
+            <outputDirectory>conf</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/test/resources/logs</directory>
+            <outputDirectory>logs</outputDirectory>
+        </fileSet>
+        <!-- 把项目的配置文件，打包进tar.gz文件的conf目录 -->  
+        <fileSet>  
+            <directory>${project.basedir}\src\main\resources</directory>  
+            <outputDirectory>conf</outputDirectory>  
+            <includes>  
+                <include>**/*.xml</include>  
+                <include>**/*.properties</include>
+                <include>**/*.ks</include>
+                <include>**/*.ts</include>    
+            </includes>  
+        </fileSet> 
+        <!-- 把项目自己编译出来的jar文件，打包进zip文件的根目录 -->  
+        <fileSet>  
+            <directory>${project.build.directory}</directory>  
+            <outputDirectory>bin</outputDirectory>  
+            <includes>  
+                <include>*.jar</include>  
+            </includes>  
+        </fileSet>  
+    </fileSets>
+</assembly>
