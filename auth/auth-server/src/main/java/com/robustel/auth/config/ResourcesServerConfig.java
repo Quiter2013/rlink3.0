@@ -1,6 +1,7 @@
 package com.robustel.auth.config;
 
 import com.robustel.auth.security.filter.CustomLogoutHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +9,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 /**
@@ -19,6 +22,11 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 @Configuration
 @EnableResourceServer
 public class ResourcesServerConfig extends ResourceServerConfigurerAdapter {
+    @Autowired
+    private ResourceServerTokenServices resourceServerTokenServices;
+
+    @Autowired
+    JdbcTokenStore tokenStore;
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
@@ -39,11 +47,7 @@ public class ResourcesServerConfig extends ResourceServerConfigurerAdapter {
 
     }
 
-    /*   @Bean
-       public CustomSecurityFilter customSecurityFilter() {
-           return new CustomSecurityFilter();
-       }
-   */
+
     @Bean
     public CustomLogoutHandler customLogoutHandler() {
         return new CustomLogoutHandler();
@@ -52,6 +56,7 @@ public class ResourcesServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        resources.tokenServices(resourceServerTokenServices);
         super.configure(resources);
     }
 }

@@ -1,22 +1,28 @@
 package com.robustel.auth.security.token;
 
+import com.robustel.auth.common.constants.SecurityConstants;
+import com.robustel.auth.security.userdetails.CustomUserDetailsService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.*;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.*;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
-import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,7 +32,7 @@ import java.util.UUID;
  * Date: Created in 16:23 2018/3/6
  * Modified By:
  */
-public class CustomAuthorizationTokenServices implements AuthorizationServerTokenServices, ConsumerTokenServices {
+public class CustomAuthorizationTokenServices implements AuthorizationServerTokenServices,ResourceServerTokenServices, ConsumerTokenServices {
 
     private int refreshTokenValiditySeconds = 60 * 60 * 24 * 30; // default 30 days.
 
@@ -43,6 +49,10 @@ public class CustomAuthorizationTokenServices implements AuthorizationServerToke
     private TokenEnhancer accessTokenEnhancer;
 
     private AuthenticationManager authenticationManager;
+
+    private CustomUserDetailsService customUserDetailsService;
+
+    private String SigningKey;
 
     /**
      * Initialize these token services. If no random generator is set, one will be created.
@@ -171,35 +181,7 @@ public class CustomAuthorizationTokenServices implements AuthorizationServerToke
         return false;
     }
 
-    public OAuth2AccessToken readAccessToken(String accessToken) {
-        return tokenStore.readAccessToken(accessToken);
-    }
 
-    public OAuth2Authentication loadAuthentication(String accessTokenValue) throws AuthenticationException,
-            InvalidTokenException {
-        OAuth2AccessToken accessToken = tokenStore.readAccessToken(accessTokenValue);
-        if (accessToken == null) {
-            throw new InvalidTokenException("Invalid access token: " + accessTokenValue);
-        } else if (accessToken.isExpired()) {
-            tokenStore.removeAccessToken(accessToken);
-            throw new InvalidTokenException("Access token expired: " + accessTokenValue);
-        }
-
-        OAuth2Authentication result = tokenStore.readAuthentication(accessToken);
-        if (result == null) {
-            // in case of race condition
-            throw new InvalidTokenException("Invalid access token: " + accessTokenValue);
-        }
-        if (clientDetailsService != null) {
-            String clientId = result.getOAuth2Request().getClientId();
-            try {
-                clientDetailsService.loadClientByClientId(clientId);
-            } catch (ClientRegistrationException e) {
-                throw new InvalidTokenException("Client not valid: " + clientId, e);
-            }
-        }
-        return result;
-    }
 
     public String getClientId(String tokenValue) {
         OAuth2Authentication authentication = tokenStore.readAuthentication(tokenValue);
@@ -224,6 +206,58 @@ public class CustomAuthorizationTokenServices implements AuthorizationServerToke
         }
         tokenStore.removeAccessToken(accessToken);
         return true;
+    }
+
+    @Override
+    public OAuth2AccessToken readAccessToken(String accessToken) {
+        return tokenStore.readAccessToken(accessToken);
+    }
+
+    @Override
+    public OAuth2Authentication loadAuthentication(String accessTokenValue) throws AuthenticationException,
+            InvalidTokenException {
+        OAuth2AccessToken accessToken = tokenStore.readAccessToken(accessTokenValue);
+        if (accessToken == null) {
+            throw new InvalidTokenException("Invalid access token: " + accessTokenValue);
+        } else if (accessToken.isExpired()) {
+            tokenStore.removeAccessToken(accessToken);
+            throw new InvalidTokenException("Access token expired: " + accessTokenValue);
+        }
+
+        OAuth2Authentication result = tokenStore.readAuthentication(accessToken);
+        if (result == null) {
+            // in case of race condition
+            throw new InvalidTokenException("Invalid access token: " + accessTokenValue);
+        }
+        if (clientDetailsService != null) {
+            String clientId = result.getOAuth2Request().getClientId();
+            try {
+                clientDetailsService.loadClientByClientId(clientId);
+            } catch (ClientRegistrationException e) {
+                throw new InvalidTokenException("Client not valid: " + clientId, e);
+            }
+        }
+        //通过反射设置 authorities
+        Claims claims = null;
+        try {
+            claims = Jwts.parser().setSigningKey(getSigningKey().getBytes("UTF-8")).parseClaimsJws(accessTokenValue).getBody();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if(claims != null){
+            String userId = (String)claims.get(SecurityConstants.USER_ID_IN_HEADER);
+            List<GrantedAuthority> grantedAuthorities = customUserDetailsService.loadUserAuthorities(userId);
+            Field authorities = null;
+            try {
+                authorities = result.getUserAuthentication().getClass().getSuperclass().getDeclaredField("authorities");
+                authorities.setAccessible(true);
+                authorities.set(result.getUserAuthentication(), grantedAuthorities);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 
     private OAuth2RefreshToken createRefreshToken(OAuth2Authentication authentication) {
@@ -377,4 +411,19 @@ public class CustomAuthorizationTokenServices implements AuthorizationServerToke
         this.clientDetailsService = clientDetailsService;
     }
 
+    public CustomUserDetailsService getCustomUserDetailsService() {
+        return customUserDetailsService;
+    }
+
+    public void setCustomUserDetailsService(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
+
+    public String getSigningKey() {
+        return SigningKey;
+    }
+
+    public void setSigningKey(String signingKey) {
+        SigningKey = signingKey;
+    }
 }

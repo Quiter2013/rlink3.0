@@ -1,4 +1,4 @@
-package com.robustel.auth.client.filter;
+package com.robustel.auth.client.context;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.robustel.auth.common.constants.AccessType;
@@ -10,13 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class UserContext implements UserDetails, SecurityContext {
 
     private static final long serialVersionUID = -5710100626512497575L;
 
-    private UUID userId;
+    private String userId;
 
     private String password;
 
@@ -30,7 +29,7 @@ public class UserContext implements UserDetails, SecurityContext {
 
     private Boolean credentialsNonExpired = true;
 
-    private List<UUID> tenantList;
+    private List<String> tenantList;
 
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -40,11 +39,21 @@ public class UserContext implements UserDetails, SecurityContext {
 
     private AccessType accessType;
 
-    public UserContext(UUID userId) {
+    private String accessToken;
+
+    public UserContext(String userId) {
         this.userId = userId;
     }
 
     public UserContext() {
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPassword() {
@@ -146,11 +155,11 @@ public class UserContext implements UserDetails, SecurityContext {
         this.authentication = authentication;
     }
 
-    public List<UUID> getTenantList() {
+    public List<String> getTenantList() {
         return tenantList;
     }
 
-    public void setTenantList(List<UUID> tenantList) {
+    public void setTenantList(List<String> tenantList) {
         this.tenantList = tenantList;
     }
 
@@ -175,6 +184,14 @@ public class UserContext implements UserDetails, SecurityContext {
 
     public void setAccessType(AccessType accessType) {
         this.accessType = accessType;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }
 

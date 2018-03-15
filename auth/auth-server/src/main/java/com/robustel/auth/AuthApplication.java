@@ -2,6 +2,7 @@ package com.robustel.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * @Author: gaolinlou
@@ -9,8 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Date: Created in 19:19 2018/3/5
  * Modified By:
  */
-//@EnableFeignClients
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 @SpringBootApplication
 public class AuthApplication {
     public static void main(String[] args) {

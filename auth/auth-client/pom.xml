@@ -13,6 +13,11 @@
     <dependencies>
         <dependency>
             <groupId>com.robustel</groupId>
+            <artifactId>common-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.robustel</groupId>
             <artifactId>auth-common</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -42,6 +47,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
         </dependency>
     </dependencies>
 
