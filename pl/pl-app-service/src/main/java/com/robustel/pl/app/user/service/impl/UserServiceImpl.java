@@ -1,6 +1,5 @@
 package com.robustel.pl.app.user.service.impl;
 
-import com.robustel.common.core.exception.BizException;
 import com.robustel.common.core.service.impl.BaseServiceImpl;
 import com.robustel.pl.app.user.dao.UserInfoMapper;
 import com.robustel.pl.app.user.entity.UserInfo;
@@ -8,7 +7,6 @@ import com.robustel.pl.app.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +19,6 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends BaseServiceImpl<UserInfoMapper,UserInfo> implements UserService {
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
 
     @Override
     public List<UserInfo> queryUserByCompanyId(String companyId) {

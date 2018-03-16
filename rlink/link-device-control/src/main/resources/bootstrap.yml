@@ -39,3 +39,14 @@ eureka:
 endpoints:
   shutdown:
     enabled: true
+security:
+  oauth2:
+    resource:
+      #id: app-manage
+      token-info-uri: oauth/check_token
+      prefer-token-info: true
+      clientId: app-manage
+      clientSecret: 123456
+auth:
+  ignoredPatterns: static/*
+feign.hystrix.enabled: false

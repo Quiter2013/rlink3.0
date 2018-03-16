@@ -7,6 +7,8 @@ import com.robustel.pl.app.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +43,7 @@ public class UserInfoController implements UserInfoFacade{
         return response;
     }
 
+    @PreAuthorize("hasAuthority('user:find')")
     @ApiOperation(value="查询用户信息",notes="根据用户Id查询用户信息")
     @Override
     public RtResponse<UserInfo> selectByPrimaryKey(@PathVariable("userId") String userId) {

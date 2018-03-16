@@ -1,15 +1,16 @@
 package com.robustel.auth.security.userdetails;
 
+import com.robustel.auth.security.authority.CustomSimpleGrantedAuthority;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityMessageSource;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,6 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Cacheable(value="user",key="#username")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<UserDetails> users = this.loadUsersByUsername(username);
         if (users.size() == 0) {
@@ -89,7 +91,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return namedParameterJdbcTemplate.query(this.rolesByUseridQuery, params, new RowMapper<GrantedAuthority>() {
             public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
                 String roleName = getRolePrefix() + rs.getString(1);
-                return new SimpleGrantedAuthority(roleName);
+                return new CustomSimpleGrantedAuthority(roleName);
             }
         });
     }
@@ -100,7 +102,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return namedParameterJdbcTemplate.query(this.authoritiesByUseridQuery, params, new RowMapper<GrantedAuthority>() {
             public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
                 String authority = rs.getString(1);
-                return new SimpleGrantedAuthority(authority);
+                return new CustomSimpleGrantedAuthority(authority);
             }
         });
     }
@@ -111,7 +113,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return namedParameterJdbcTemplate.query(this.groupRolesByUseridQuery, params, new RowMapper<GrantedAuthority>() {
             public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
                 String roleName = getRolePrefix() + rs.getString(1);
-                return new SimpleGrantedAuthority(roleName);
+                return new CustomSimpleGrantedAuthority(roleName);
             }
         });
     }

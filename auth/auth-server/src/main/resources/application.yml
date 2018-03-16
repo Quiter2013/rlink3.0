@@ -9,9 +9,11 @@ spring:
    driver-class-name: com.mysql.jdbc.Driver
   redis:
     host: 172.16.0.104
-    database: 0
+    database: 3
   application:
     name: auth-server
+  cache:
+    type: redis
 eureka:
   client:
     service-url:
@@ -33,3 +35,7 @@ auth:
   security:
      oauth2:
       signingKey: robustel
+redis:
+   cache:
+     expires:
+        user: 300

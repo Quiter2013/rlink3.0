@@ -8,6 +8,9 @@ spring:
         enabled: true
         service-id: config-server
       name: pl-jdbc
+  redis:
+    host: 172.16.0.104
+    database: 3
   datasource:
     name: test
     # 使用druid数据源
@@ -42,6 +45,8 @@ spring:
           wall:
               config:
                   multi-statement-allow: true
+  cache:
+    type: redis
 
 
 mybatis:
@@ -69,3 +74,18 @@ logging:
   #level:
      #org.spring.springboot.dao: DEBUG
   file: logs/spring-boot-logging.log
+
+auth:
+  security:
+     oauth2:
+      client:
+        clientId: app-manage
+        clientSecret: 123456
+        checkTokenEndpointUrl: oauth/check_token
+        authServiceId: auth-server
+
+redis:
+   cache:
+     enable: true
+     expires:
+        check_token: 300

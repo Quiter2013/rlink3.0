@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.robustel</groupId>
-            <artifactId>common-web</artifactId>
+            <artifactId>common-cache</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -51,6 +51,10 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 

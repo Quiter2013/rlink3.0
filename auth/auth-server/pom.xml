@@ -12,11 +12,11 @@
     <artifactId>auth-server</artifactId>
 
      <dependencies>
-         <!--<dependency>
+         <dependency>
              <groupId>com.robustel</groupId>
-             <artifactId>common-core</artifactId>
-             <version>0.0.1-SNAPSHOT</version>
-         </dependency>-->
+             <artifactId>common-cache</artifactId>
+             <version>${project.version}</version>
+         </dependency>
          <dependency>
              <groupId>com.robustel</groupId>
              <artifactId>auth-common</artifactId>

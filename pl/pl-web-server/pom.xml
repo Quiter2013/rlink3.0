@@ -14,7 +14,7 @@
         <dependency>
             <groupId>com.robustel</groupId>
             <artifactId>pl-app-service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>

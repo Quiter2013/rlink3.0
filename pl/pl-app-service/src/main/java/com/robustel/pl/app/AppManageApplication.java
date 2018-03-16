@@ -1,10 +1,13 @@
 package com.robustel.pl.app;
 
+import com.robustel.auth.client.annotation.EnableAuthClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
@@ -13,8 +16,10 @@ import tk.mybatis.spring.annotation.MapperScan;
  * @Date: Created in 19:26 2018/2/7
  * @Modified By:
  */
+@EnableCaching
 @EnableCircuitBreaker
-@EnableFeignClients
+//@EnableAuthClient
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableDiscoveryClient
 @SpringBootApplication(scanBasePackages = {"com.robustel"})
 @MapperScan(basePackages = {"com.robustel.pl.*.*.dao"})

@@ -1,5 +1,6 @@
 package com.robustel.common.core.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import javax.sql.DataSource;
  * @Date: Created in 11:20 2018/2/9
  * @Modified By:
  */
+@Slf4j
 @Configuration
 @RefreshScope
 public class DataSourceConfig {
@@ -20,6 +22,7 @@ public class DataSourceConfig {
     @RefreshScope
     @ConfigurationProperties(prefix = "spring.datasource.druid")
     public DataSource dataSource() {
+        log.info("Initializing datasource to support refresh.");
         return new DataSoureWrapper();
     }
 

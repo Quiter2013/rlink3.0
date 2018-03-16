@@ -4,6 +4,7 @@ import com.robustel.common.web.vo.RtResponse;
 import com.robustel.pl.app.user.entity.UserInfo;
 import com.robustel.pl.app.user.facade.UserInfoFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -19,7 +20,7 @@ public class HelloController {
     @Autowired
     private UserInfoFacade userInfoFacade;
 
-
+    @PreAuthorize("hasAuthority('editSysRole')")
     @GetMapping(value="/user/{userId}")
     @ResponseBody
     public String getUserName(@PathVariable("userId" ) String userId){

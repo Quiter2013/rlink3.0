@@ -9,3 +9,6 @@ security:
   basic:
     enabled: false
 debug: true
+spring:
+  aop:
+    auto: true

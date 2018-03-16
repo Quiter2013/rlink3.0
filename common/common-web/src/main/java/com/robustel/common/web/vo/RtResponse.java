@@ -25,6 +25,15 @@ public class RtResponse<T> implements Serializable{
      * 业务数据 没有使用attr的原因是，attr主要是用来放置查询条件的
      */
     private T data = null;
+
+    public RtResponse(){
+
+    }
+    public RtResponse(Integer code, String msg,T data ){
+        this.setCode(code,msg);
+        this.data = data ;
+    }
+
     public void setCode(Integer code, String msg) {
         this.setCode(code);
         this.msg = msg;
