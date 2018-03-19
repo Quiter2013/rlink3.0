@@ -11,12 +11,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * Date: Created in 19:19 2018/3/5
  * Modified By:
  */
-//@EnableCaching
+@EnableCaching
 @EnableDiscoveryClient
 @SpringBootApplication
 public class AuthApplication {
     public static void main(String[] args) {
-        System.setProperty("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
         SpringApplication.run(AuthApplication.class,args);
     }
 }

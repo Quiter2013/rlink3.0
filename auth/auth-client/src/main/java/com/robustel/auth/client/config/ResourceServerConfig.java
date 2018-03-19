@@ -1,13 +1,8 @@
 package com.robustel.auth.client.config;
 
-import com.robustel.auth.client.interceptor.OAuth2FeignRequestInterceptor;
-import com.robustel.auth.client.rpc.RestTemplateService;
-import com.robustel.auth.common.properties.OAuth2ClientProperties;
+import com.robustel.auth.client.security.token.CustomRemoteTokenServices;
 import com.robustel.auth.common.properties.SecurityProperties;
-import feign.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,12 +16,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Autowired
-    private LoadBalancerClient loadBalancerClient;
+    private CustomRemoteTokenServices customRemoteTokenServices;
     @Autowired
     private SecurityProperties securityProperties;
-    @Autowired
-    private RestTemplateService restTemplateService;
-
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -40,29 +32,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(ignoredPatterns).permitAll()
                 .anyRequest().authenticated();
-
     }
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-        resources.tokenServices(customRemoteTokenServices(securityProperties));
+        resources.tokenServices(customRemoteTokenServices);
     }
-
-    @Bean
-    public CustomRemoteTokenServices customRemoteTokenServices(SecurityProperties securityProperties){
-        OAuth2ClientProperties client = securityProperties.getOauth2().getClient();
-        CustomRemoteTokenServices resourceServerTokenServices = new CustomRemoteTokenServices();
-        resourceServerTokenServices.setCheckTokenEndpointUrl(client.getCheckTokenEndpointUrl());
-        resourceServerTokenServices.setClientId(client.getClientId());
-        resourceServerTokenServices.setClientSecret(client.getClientSecret());
-        resourceServerTokenServices.setLoadBalancerClient(loadBalancerClient);
-        resourceServerTokenServices.setAuthServiceName(client.getAuthServiceId());
-        resourceServerTokenServices.setRestTemplateService(restTemplateService);
-        return resourceServerTokenServices;
-    }
-    @Bean
-    public RequestInterceptor oauth2FeignRquestInterceptor(){
-        return new OAuth2FeignRequestInterceptor();
-    }
-
 }

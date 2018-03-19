@@ -1,16 +1,16 @@
 package com.robustel.auth.client.context;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.robustel.auth.common.constants.AccessType;
+import lombok.Data;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
+@Data
 public class UserContext implements UserDetails, SecurityContext {
 
     private static final long serialVersionUID = -5710100626512497575L;
@@ -29,17 +29,13 @@ public class UserContext implements UserDetails, SecurityContext {
 
     private Boolean credentialsNonExpired = true;
 
-    private List<String> tenantList;
-
     private Collection<? extends GrantedAuthority> authorities;
 
     private Authentication authentication;
 
     private Map<String, String> dataSecurityMap;
 
-    private AccessType accessType;
-
-    private String accessToken;
+     private String accessToken;
 
     public UserContext(String userId) {
         this.userId = userId;
@@ -48,28 +44,9 @@ public class UserContext implements UserDetails, SecurityContext {
     public UserContext() {
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 
     public void setPassword(String password) {
         this.password = password == null ? null : password.trim();
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     @JsonIgnore
@@ -77,30 +54,14 @@ public class UserContext implements UserDetails, SecurityContext {
         return this.accountNonLocked;
     }
 
-    public void setAccountNonLocked(Boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
-    }
-
     @Override
     public boolean isAccountNonLocked() {
         return this.getAccountNonLocked();
     }
 
-    public String getUsername() {
-        return this.userName;
-    }
-
-    public void setUsername(String userName) {
-        this.userName = userName;
-    }
-
     @JsonIgnore
     public Boolean getEnabled() {
         return this.enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
     }
 
     @Override
@@ -113,17 +74,14 @@ public class UserContext implements UserDetails, SecurityContext {
         return this.authorities;
     }
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
+    @Override
+    public String getUsername() {
+        return this.userName;
     }
 
     @JsonIgnore
     public Boolean getAccountNonExpired() {
         return this.accountNonExpired;
-    }
-
-    public void setAccountNonExpired(Boolean accountNonExpired) {
-        this.accountNonExpired = accountNonExpired;
     }
 
     @Override
@@ -134,10 +92,6 @@ public class UserContext implements UserDetails, SecurityContext {
     @JsonIgnore
     public Boolean getCredentialsNonExpired() {
         return this.credentialsNonExpired;
-    }
-
-    public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
-        this.credentialsNonExpired = credentialsNonExpired;
     }
 
     @Override
@@ -153,45 +107,6 @@ public class UserContext implements UserDetails, SecurityContext {
     @Override
     public void setAuthentication(Authentication authentication) {
         this.authentication = authentication;
-    }
-
-    public List<String> getTenantList() {
-        return tenantList;
-    }
-
-    public void setTenantList(List<String> tenantList) {
-        this.tenantList = tenantList;
-    }
-
-    /**
-     * Return the data security map, which contains the filter conditions for data security,
-     * the keys are the type of the filter conditions, such as TENANT or DOCUMENT. the value
-     * are the acceptable list for the filter type. usually the value is UUID list.
-     *
-     * @return
-     */
-    public Map<String, String> getDataSecurityMap() {
-        return dataSecurityMap;
-    }
-
-    public void setDataSecurityMap(Map<String, String> dataSecurityMap) {
-        this.dataSecurityMap = dataSecurityMap;
-    }
-
-    public AccessType getAccessType() {
-        return accessType;
-    }
-
-    public void setAccessType(AccessType accessType) {
-        this.accessType = accessType;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
     }
 }
 
