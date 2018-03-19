@@ -7,11 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.robustel.common.cache.redis.properties.RedisCacheProperties;
 import com.robustel.common.cache.redis.serializer.FastJsonRedisSerializer;
 import com.robustel.common.cache.redis.serializer.StringRedisSerializer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +45,6 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    //@ConditionalOnMissingBean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
