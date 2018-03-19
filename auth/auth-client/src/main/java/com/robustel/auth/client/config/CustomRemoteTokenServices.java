@@ -1,14 +1,19 @@
 package com.robustel.auth.client.config;
 
 import com.robustel.auth.client.context.UserContext;
-import com.robustel.auth.client.rpc.RemoteRestTemplate;
+import com.robustel.auth.client.rpc.RestTemplateService;
 import com.robustel.auth.common.constants.AccessType;
 import com.robustel.auth.common.constants.SecurityConstants;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
@@ -21,7 +26,11 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
@@ -34,16 +43,14 @@ public class CustomRemoteTokenServices implements ResourceServerTokenServices {
     private String clientSecret;
     private String tokenName = "token";
     private String authServiceName = "auth-server";
+    private RestTemplateService restTemplateService;
 
     private AccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
-
-    public CustomRemoteTokenServices() { }
 
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
         //解析token获取
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
-        formData.add(tokenName, accessToken);
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret));
 
@@ -51,7 +58,7 @@ public class CustomRemoteTokenServices implements ResourceServerTokenServices {
         if (serviceInstance == null) {
             throw new RuntimeException("Failed to choose an auth instance.");
         }
-        Map<String, Object> map = RemoteRestTemplate.getInstance().postForMap(serviceInstance.getUri().toString() + checkTokenEndpointUrl, formData, headers);
+        Map<String, Object> map = restTemplateService.postForMap(serviceInstance.getUri().toString() + checkTokenEndpointUrl, accessToken, headers);
 
         if (map.containsKey("error")) {
             log.debug("check_token returned error: " + map.get("error"));
@@ -85,7 +92,5 @@ public class CustomRemoteTokenServices implements ResourceServerTokenServices {
             throw new IllegalStateException("Could not convert String");
         }
     }
-
-
 
 }

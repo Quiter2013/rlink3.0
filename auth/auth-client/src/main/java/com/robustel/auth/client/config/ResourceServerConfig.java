@@ -1,6 +1,7 @@
 package com.robustel.auth.client.config;
 
 import com.robustel.auth.client.interceptor.OAuth2FeignRequestInterceptor;
+import com.robustel.auth.client.rpc.RestTemplateService;
 import com.robustel.auth.common.properties.OAuth2ClientProperties;
 import com.robustel.auth.common.properties.SecurityProperties;
 import feign.RequestInterceptor;
@@ -15,14 +16,16 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
 @EnableGlobalMethodSecurity(prePostEnabled=true)
-@Configuration
 @EnableResourceServer
+@Configuration
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Autowired
     private LoadBalancerClient loadBalancerClient;
     @Autowired
     private SecurityProperties securityProperties;
+    @Autowired
+    private RestTemplateService restTemplateService;
 
 
     @Override
@@ -42,15 +45,21 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        resources.tokenServices(customRemoteTokenServices(securityProperties));
+    }
+
+    @Bean
+    public CustomRemoteTokenServices customRemoteTokenServices(SecurityProperties securityProperties){
         OAuth2ClientProperties client = securityProperties.getOauth2().getClient();
         CustomRemoteTokenServices resourceServerTokenServices = new CustomRemoteTokenServices();
         resourceServerTokenServices.setCheckTokenEndpointUrl(client.getCheckTokenEndpointUrl());
         resourceServerTokenServices.setClientId(client.getClientId());
         resourceServerTokenServices.setClientSecret(client.getClientSecret());
         resourceServerTokenServices.setLoadBalancerClient(loadBalancerClient);
-        resources.tokenServices(resourceServerTokenServices);
+        resourceServerTokenServices.setAuthServiceName(client.getAuthServiceId());
+        resourceServerTokenServices.setRestTemplateService(restTemplateService);
+        return resourceServerTokenServices;
     }
-
     @Bean
     public RequestInterceptor oauth2FeignRquestInterceptor(){
         return new OAuth2FeignRequestInterceptor();
