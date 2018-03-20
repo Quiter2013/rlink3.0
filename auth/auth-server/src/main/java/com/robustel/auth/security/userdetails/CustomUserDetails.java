@@ -29,11 +29,11 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.trim();
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password.trim();
     }
 
     public void setEnabled(boolean enabled) {

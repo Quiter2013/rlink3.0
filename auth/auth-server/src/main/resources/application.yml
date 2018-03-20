@@ -31,11 +31,15 @@ security:
   oauth2:
     resource:
       filter-order: 3
-auth:
+
+custom:
   security:
-     oauth2:
+    oauth2:
       signingKey: robustel
-redis:
-   cache:
+    userDetails:
+      usersByUsernameQuery: select user_name,login_pwd,user_id
+         from tbs_pl_user_base_info where state in ('1') and (login_account=:username or email=:username)
+  redis:
+    cache:
      expires:
         user: 300

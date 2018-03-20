@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.robustel.common.cache.redis.properties.RedisCacheProperties;
-import com.robustel.common.cache.redis.serializer.FastJsonRedisSerializer;
 import com.robustel.common.cache.redis.serializer.StringRedisSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,11 +24,11 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
  * Modified By:
  */
 @Configuration
-@ConditionalOnProperty(prefix = "redis.cache",name="enable", havingValue = "true",matchIfMissing = false)
+@ConditionalOnProperty(prefix = "custom.redis.cache",name="enable", havingValue = "true",matchIfMissing = true)
 public class RedisConfig {
 
     @Bean
-    @ConfigurationProperties(prefix = "redis.cache")
+    @ConfigurationProperties(prefix = "custom.redis.cache")
     public RedisCacheProperties redisCacheProperties(){
         return new RedisCacheProperties();
     }
@@ -55,7 +54,7 @@ public class RedisConfig {
         om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         jackson2JsonRedisSerializer.setObjectMapper(om);
 
-        FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
+        //FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
         // 全局开启AutoType，不建议使用
          ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
         // 建议使用这种方式，小范围指定白名单

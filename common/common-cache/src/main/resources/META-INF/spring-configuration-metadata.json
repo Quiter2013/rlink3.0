@@ -1,0 +1,37 @@
+{
+  "groups": [
+    {
+      "name": "custom.redis.cache",
+      "type": "com.robustel.common.cache.redis.properties.RedisCacheProperties",
+      "description": "redis cache configuration.",
+      "sourceType": "com.robustel.common.cache.redis.properties.RedisCacheProperties"
+    }
+  ],
+  "properties":[
+    {
+      "name": "custom.redis.cache.expires",
+      "type": "java.util.HashMap<String,Long>",
+      "sourceType": "com.robustel.common.cache.redis.properties.RedisCacheProperties"
+    },
+    {
+      "name": "custom.redis.cache.enable",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.robustel.common.cache.redis.properties.RedisCacheProperties",
+      "defaultValue":true
+    }
+  ],
+  "hints": [
+    {
+      "name": "custom.redis.cache.enable",
+      "values":[
+        {
+          "value": true,
+          "description": "enable custom redis cache for key and value serializer"
+        },
+        {
+          "value": false,
+          "description": "disable custom redis cache"}
+      ]
+    }
+  ]
+}

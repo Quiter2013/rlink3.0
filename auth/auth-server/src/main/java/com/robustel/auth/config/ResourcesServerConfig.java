@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
@@ -23,10 +24,10 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 @EnableResourceServer
 public class ResourcesServerConfig extends ResourceServerConfigurerAdapter {
     @Autowired
+    TokenStore tokenStore;
+    @Autowired
     private ResourceServerTokenServices resourceServerTokenServices;
 
-    @Autowired
-    JdbcTokenStore tokenStore;
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()

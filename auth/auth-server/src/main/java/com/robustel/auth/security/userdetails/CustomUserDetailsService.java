@@ -1,6 +1,7 @@
 package com.robustel.auth.security.userdetails;
 
 import com.robustel.auth.security.authority.CustomSimpleGrantedAuthority;
+import lombok.Data;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ import java.util.*;
  * Date: Created in 14:40 2018/3/7
  * Modified By:
  */
-@Component
+@Data
 public class CustomUserDetailsService implements UserDetailsService {
     protected final Log logger = LogFactory.getLog(this.getClass());
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
@@ -41,7 +42,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private boolean enableAuthorities = true;
     private boolean enableGroups;
 
-    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Cacheable(value="user",key="#username")
@@ -118,72 +118,20 @@ public class CustomUserDetailsService implements UserDetailsService {
         });
     }
 
-    protected MessageSourceAccessor getMessages() {
-        return this.messages;
-    }
-
-    public void setMessageSource(MessageSource messageSource) {
+     public void setMessageSource(MessageSource messageSource) {
         Assert.notNull(messageSource, "messageSource cannot be null");
         this.messages = new MessageSourceAccessor(messageSource);
-    }
-
-    public String getRolesByUseridQuery() {
-        return rolesByUseridQuery;
-    }
-
-    public void setRolesByUseridQuery(String rolesByUseridQuery) {
-        this.rolesByUseridQuery = rolesByUseridQuery;
-    }
-
-    public String getGroupRolesByUseridQuery() {
-        return groupRolesByUseridQuery;
-    }
-
-    public void setGroupRolesByUseridQuery(String groupRolesByUseridQuery) {
-        this.groupRolesByUseridQuery = groupRolesByUseridQuery;
-    }
-
-    public String getUsersByUsernameQuery() {
-        return usersByUsernameQuery;
-    }
-
-    public void setUsersByUsernameQuery(String usersByUsernameQuery) {
-        this.usersByUsernameQuery = usersByUsernameQuery;
-    }
-
-    public String getAuthoritiesByUseridQuery() {
-        return authoritiesByUseridQuery;
-    }
-
-    public void setAuthoritiesByUseridQuery(String authoritiesByUseridQuery) {
-        this.authoritiesByUseridQuery = authoritiesByUseridQuery;
-    }
-
-    public String getRolePrefix() {
-        return rolePrefix;
-    }
-
-    public void setRolePrefix(String rolePrefix) {
-        this.rolePrefix = rolePrefix;
     }
 
     public boolean isEnableAuthorities() {
         return enableAuthorities;
     }
 
-    public void setEnableAuthorities(boolean enableAuthorities) {
-        this.enableAuthorities = enableAuthorities;
-    }
-
     public boolean isEnableGroups() {
         return enableGroups;
     }
 
-    public void setEnableGroups(boolean enableGroups) {
-        this.enableGroups = enableGroups;
-    }
-
-    private CustomUserDetails buildCustomUserDetails(String username, String password, String userId, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails buildCustomUserDetails(String username, String password, String userId, Collection<? extends GrantedAuthority> authorities) {
         CustomUserDetails customUserDetails = new CustomUserDetails.CustomUserDetailsBuilder()
                 .withUserId(userId)
                 .withPassword(password)

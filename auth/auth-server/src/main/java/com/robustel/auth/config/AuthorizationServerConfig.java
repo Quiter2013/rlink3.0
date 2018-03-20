@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
-import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
+import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -41,8 +41,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private WebResponseExceptionTranslator webResponseExceptionTranslator;
 
     @Bean
     public ClientDetailsService clientDetailsService(DataSource dataSource) {
@@ -70,7 +68,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .tokenStore(tokenStore(dataSource))
                 .tokenServices(authorizationServerTokenServices())
                 .accessTokenConverter(accessTokenConverter())
-                .exceptionTranslator(webResponseExceptionTranslator);
+                .exceptionTranslator(new DefaultWebResponseExceptionTranslator());
     }
 
     @Bean

@@ -1,0 +1,119 @@
+{
+  "groups": [
+    {
+      "name": "custom.security",
+      "type": "com.robustel.auth.common.properties.SecurityProperties",
+      "description": "custom oauth security.",
+      "sourceType": "com.robustel.auth.common.properties.SecurityProperties"
+    },
+    {
+      "name": "custom.security.oauth2",
+      "type": "com.robustel.auth.common.properties.OAuth2Properties",
+      "description": "custom oauth2 security configuration",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2Properties"
+    },
+    {
+      "name": "custom.security.userDetails",
+      "type": "com.robustel.auth.common.properties.UserDetailsProperties",
+      "description": "customer user detail configuration",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    },
+    {
+      "name": "custom.security.oauth2.client",
+      "type": "com.robustel.auth.common.properties.OAuth2ClientProperties",
+      "description": "customer oatuh2 client configuration",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2ClientProperties"
+    }
+  ],
+  "properties":[
+    {
+      "name": "custom.security.ignoredPatterns",
+      "type": "java.lang.String[]",
+      "sourceType": "com.robustel.auth.common.properties.SecurityProperties"
+    },
+    {
+      "name": "custom.security.oauth2.signingKey",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2Properties"
+    },
+    {
+      "name": "custom.security.oauth2.client.clientId",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2ClientProperties"
+    },
+    {
+      "name": "custom.security.oauth2.client.clientSecret",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2ClientProperties"
+    },
+    {
+      "name": "custom.security.oauth2.client.accessTokenValiditySeconds",
+      "type": "java.lang.Integer",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2ClientProperties"
+    },
+    {
+      "name": "custom.security.oauth2.client.authServiceId",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2ClientProperties"
+    },
+    {
+      "name": "custom.security.oauth2.client.checkTokenEndpointUrl",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2ClientProperties"
+    },
+    {
+      "name": "custom.security.oauth2.client.enableCache",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.robustel.auth.common.properties.OAuth2ClientProperties"
+    },
+    {
+      "name": "custom.security.userDetails.rolesByUseridQuery",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    },
+    {
+      "name": "custom.security.userDetails.groupRolesByUseridQuery",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    },
+    {
+      "name": "custom.security.userDetails.usersByUsernameQuery",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    },
+    {
+      "name": "custom.security.userDetails.authoritiesByUseridQuery",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    },
+    {
+      "name": "custom.security.userDetails.rolePrefix",
+      "type": "java.lang.String",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    },
+    {
+      "name": "custom.security.userDetails.enableAuthorities",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    },
+    {
+      "name": "custom.security.userDetails.enableGroups",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.robustel.auth.common.properties.UserDetailsProperties"
+    }
+  ],
+  "hints": [
+    {
+      "name": "custom.security.userDetails.enableGroups",
+      "values":[
+        {
+          "value": true,
+          "description": "enable group role query"
+        },
+        {
+          "value": false,
+          "description": "disable group role query，default false"}
+      ]
+    }
+  ]
+}

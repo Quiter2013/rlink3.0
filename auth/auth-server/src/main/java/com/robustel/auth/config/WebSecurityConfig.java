@@ -1,9 +1,12 @@
 package com.robustel.auth.config;
 
+import com.robustel.auth.common.properties.SecurityProperties;
+import com.robustel.auth.common.properties.UserDetailsProperties;
 import com.robustel.auth.security.userdetails.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,7 +24,25 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    CustomUserDetailsService customUserDetailsService;
+    private SecurityProperties securityProperties;
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Bean
+    public CustomUserDetailsService customUserDetailsService() {
+        UserDetailsProperties userDetailsProperties = securityProperties.getUserDetails();
+        CustomUserDetailsService customUserDetailsService = new CustomUserDetailsService();
+        customUserDetailsService.setUsersByUsernameQuery(userDetailsProperties.getUsersByUsernameQuery());
+        customUserDetailsService.setAuthoritiesByUseridQuery(userDetailsProperties.getAuthoritiesByUseridQuery());
+        customUserDetailsService.setRolesByUseridQuery(userDetailsProperties.getRolesByUseridQuery());
+        customUserDetailsService.setGroupRolesByUseridQuery(userDetailsProperties.getGroupRolesByUseridQuery());
+        customUserDetailsService.setRolePrefix(userDetailsProperties.getRolePrefix());
+        customUserDetailsService.setEnableAuthorities(userDetailsProperties.isEnableAuthorities());
+        customUserDetailsService.setEnableGroups(userDetailsProperties.isEnableGroups());
+        customUserDetailsService.setNamedParameterJdbcTemplate(namedParameterJdbcTemplate);
+        return customUserDetailsService;
+    }
+
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -30,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(new Md5PasswordEncoder());
+        auth.userDetailsService(customUserDetailsService()).passwordEncoder(new Md5PasswordEncoder());
     }
 
     @Override

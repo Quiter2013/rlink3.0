@@ -47,6 +47,7 @@ security:
       prefer-token-info: true
       clientId: app-manage
       clientSecret: 123456
-auth:
-  ignoredPatterns: static/*
 feign.hystrix.enabled: false
+custom:
+  security:
+    ignoredPatterns: static/*

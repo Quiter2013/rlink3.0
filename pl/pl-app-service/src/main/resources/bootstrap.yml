@@ -50,12 +50,12 @@ spring:
 
 
 mybatis:
-    mapper-locations: classpath:mapper/**/*.xml
+  mapper-locations: classpath:mapper/**/*.xml
 mapper:
     #mappers:
      #   - com.robustel.pl.app.user.dao.UserInfoMapper
-    not-empty: false
-    identity: MYSQL
+  not-empty: false
+  identity: MYSQL
 pagehelper:
     helperDialect: mysql
     reasonable: true
@@ -65,7 +65,7 @@ pagehelper:
 eureka:
   client:
     service-url:
-     defaultZone: http://discovery:9761/eureka/
+    defaultZone: http://discovery:9761/eureka/
 endpoints:
   shutdown:
     enabled: true
@@ -75,17 +75,17 @@ logging:
      #org.spring.springboot.dao: DEBUG
   file: logs/spring-boot-logging.log
 
-auth:
+
+custom:
   security:
-     oauth2:
+    oauth2:
       client:
         clientId: app-manage
         clientSecret: 123456
         checkTokenEndpointUrl: oauth/check_token
         authServiceId: auth-server
-
-redis:
-   cache:
-     enable: true
-     expires:
-        check_token: 300
+  redis:
+    cache:
+      enable: true
+      expires:
+        accessToken: 300

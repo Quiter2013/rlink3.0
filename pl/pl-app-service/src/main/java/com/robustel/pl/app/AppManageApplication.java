@@ -6,8 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
@@ -18,14 +16,14 @@ import tk.mybatis.spring.annotation.MapperScan;
  */
 @EnableCaching
 @EnableCircuitBreaker
-//@EnableAuthClient
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableAuthClient
 @EnableDiscoveryClient
-@SpringBootApplication(scanBasePackages = {"com.robustel"})
+@SpringBootApplication//(scanBasePackages = {"com.robustel"})
 @MapperScan(basePackages = {"com.robustel.pl.*.*.dao"})
 public class AppManageApplication {
     public static void main(String[] args) {
-        SpringApplication.run(AppManageApplication.class,args);
+        SpringApplication.run(AppManageApplication.class, args);
     }
+
 
 }

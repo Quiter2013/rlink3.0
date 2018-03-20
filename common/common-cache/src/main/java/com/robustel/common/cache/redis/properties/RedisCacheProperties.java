@@ -1,6 +1,6 @@
 package com.robustel.common.cache.redis.properties;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.Data;
 
 import java.util.Map;
 
@@ -10,14 +10,8 @@ import java.util.Map;
  * Date: Created in 14:22 2018/3/16
  * Modified By:
  */
+@Data
 public class RedisCacheProperties {
+    private  boolean enable;
     private Map<String,Long> expires;
-
-    public Map<String, Long> getExpires() {
-        return expires;
-    }
-
-    public void setExpires(Map<String, Long> expires) {
-        this.expires = expires;
-    }
 }
