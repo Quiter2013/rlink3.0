@@ -70,10 +70,10 @@ endpoints:
   shutdown:
     enabled: true
 
-logging:
+#logging:
   #level:
      #org.spring.springboot.dao: DEBUG
-  file: logs/spring-boot-logging.log
+  #file: logs/spring-boot-logging.log
 
 
 custom:

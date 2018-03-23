@@ -1,5 +1,7 @@
 package com.robustel.common.web.vo;
 
+import com.alibaba.druid.util.StringUtils;
+
 import java.io.Serializable;
 
 /**
@@ -74,5 +76,70 @@ public class RtResponse<T> implements Serializable{
 	public void setData(T data) {
 		this.data = data;
 	}
+
+    public static RtResponse success() {
+        return new RtResponse(0,"success",null);
+    }
+
+    /***
+     * success:操作成功返回 <br/>
+     *
+     * @author he.kui
+     * @param data
+     *            返回到前端的数据对象
+     * @return
+     * @since JDK 1.7
+     */
+    public static <E> RtResponse<E> success(E data) {
+        RtResponse result = new RtResponse(0,"success",data);
+        return result;
+    }
+
+
+    /***
+     * fail:操作失败时返回 <br/>
+     *
+     * @author he.kui
+     * @param errCode
+     *            错误代码
+     * @return
+     * @since JDK 1.7
+     */
+    public static RtResponse fail(int errCode) {
+        RtResponse result = new RtResponse(errCode,"faliure",null);
+        return result;
+    }
+
+    /**
+     * 操作失败抛出错误代码和错误明细 fail:<br/>
+     * @author gaolinlou
+     * @param errCode
+     * @param data
+     * @return
+     * @since JDK 1.7
+     */
+    public static <E> RtResponse<E> fail(int errCode,E data){
+        RtResponse result = new RtResponse(errCode,"failure",null);
+        return result;
+    }
+
+
+    /**
+     * 操作失败抛出错误代码和错误信息 fail:<br/>
+     *
+     * @author he.kui
+     * @param errCode
+     * @param errMessage
+     * @return
+     * @since JDK 1.7
+     */
+    public static RtResponse fail(int errCode, String errMessage) {
+        if (StringUtils.isEmpty(errMessage)) {
+            return fail(errCode);
+        } else {
+            RtResponse result = new RtResponse(errCode, errMessage,null);
+            return result;
+        }
+    }
 
 }

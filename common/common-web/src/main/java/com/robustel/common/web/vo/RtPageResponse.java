@@ -1,14 +1,17 @@
 package com.robustel.common.web.vo;
 
 import java.io.Serializable;
+import java.util.List;
 
+import com.github.pagehelper.Page;
 import org.springframework.validation.annotation.Validated;
 
-public class RtPageResponse extends RtResponse implements Serializable {
+public class RtPageResponse<T extends List<?>> extends RtResponse<T> implements Serializable {
     /**
     * @字段说明 serialVersionUID
     */
     private static final long serialVersionUID = 1L;
+
     // 当前页
     private int pageNum;
     // 每页的数量
@@ -18,11 +21,53 @@ public class RtPageResponse extends RtResponse implements Serializable {
     // 总页数
     private int pages;
 
+    private int size;
+
     public RtPageResponse() {
     }
 
+    /**
+     * 包装page对象
+     * @param list
+     * @param code
+     * @param msg
+     */
+    public RtPageResponse(T list,int code,String msg) {
+        this(list);
+        setCode(code);
+        setMsg(msg);
+
+    }
+
+    /**
+     * 包装Page对象
+     *
+     * @param list          page结果
+     */
+    public RtPageResponse(T list) {
+        if (list instanceof Page) {
+            super.setCode(0);
+            super.setMsg("success");
+            Page page = (Page) list;
+            this.pageNum = page.getPageNum();
+            this.total = page.getTotal();
+            this.pages = page.getPages();
+            this.size = page.size();
+            this.pageSize = page.getPageSize();
+            this.setData(list);
+        }else{
+            super.setCode(0);
+            this.pageNum =1;
+            this.total =list.size();
+            this.pages =1;
+            this.size =list.size();
+            this.pageSize =list.size();
+            this.setData(list);
+        }
+    }
+
     @Validated
-    public void setData(Object data) {
+    public void setData(T data) {
         super.setData(data);
     }
 
@@ -69,5 +114,13 @@ public class RtPageResponse extends RtResponse implements Serializable {
         sb.append(", data=").append(getData());
         sb.append('}');
         return sb.toString();
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }
