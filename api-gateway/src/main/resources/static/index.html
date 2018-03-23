@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Gateway</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="plugins/layui/css/layui.css"  media="all">
+</head>
+<body>
+
+    <ul class="layui-nav">
+        <li class="layui-nav-item"><a href="">网关中心</a></li>
+        <li class="layui-nav-item layui-this">
+            <a href="javascript:;">动态路由</a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">限流</a>
+        </li>
+        <li class="layui-nav-item"><a href="">安全</a></li>
+    </ul>
+
+    <div id="app" v-cloak >
+        <div v-show="showList" >
+            <div class="layui-row" style="height: 50px"></div>
+            <div class="layui-row">
+               <div class="topTools">
+                    <div class="layui-col-xs9">
+                        <div class="layui-btn-group">
+                            <button class="layui-btn" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</button>
+                            <button class="layui-btn" @click="publish"><i class="fa fa-send"></i>&nbsp;发布</button>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs3">
+                        <div class="layui-inline" >
+                            <input class="layui-input" id="routeReload" autocomplete="off">
+                        </div>
+                        <button class="layui-btn" data-type="reload"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+          <table  id="routeTable" lay-filter="routeFilter"></table>
+       </div>
+
+       <div v-show="!showList">
+            <h1 class="layui-colla-title">{{title}}</h1>
+            <form class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">ID</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" v-model="gateway.id" placeholder="唯一不重复"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">路径</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" v-model="gateway.path" placeholder="匹配的路径"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">服务ID</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" v-model="gateway.serviceId" placeholder="后端服务ID"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">URL</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" v-model="gateway.url" placeholder="转发后台的路径"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否重试</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox"  v-model="gateway.retryable" lay-skin="switch" lay-text="ON|OFF" lay-filter="switchRetryable">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否开启</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox"  v-model="gateway.enabled" lay-skin="switch"  lay-text="ON|OFF" lay-filter="switchEnabled">
+                        <span>{{gateway.enabled}}</span>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">忽略前缀</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" v-model="gateway.stripPrefix"  lay-skin="switch"  lay-text="ON|OFF" lay-filter="switchStripPrefix">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">api名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" v-model="gateway.apiName" placeholder="api名称"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" v-if="title != '查看'" class="layui-btn" @click="saveOrUpdate" >确定</button>
+                        <button type="cancel" class="layui-btn layui-btn-primary">返回</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+<script src="libs/jquery.min.js"></script>
+<script src="plugins/layui/layui.js" charset="utf-8"></script>
+<script src="libs/vue.min.js" charset="utf-8"></script>
+<script src="libs/jquery.min.js"></script>
+<script type="text/html" id="checkboxTpl">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="lock" lay-skin="switch"  lay-text="ON|OFF" value="{{d.enabled}}" title="开启" lay-filter="lockDemo" {{ d.enabled == true ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="barTool">
+    <button class="layui-btn layui-btn-sm" lay-event="detail">
+        <i class="fa fa-eye"></i>
+    </button>
+    <button class="layui-btn layui-btn-sm" lay-event="edit">
+        <i class="fa fa-pencil"></i>
+    </button>
+    <button class="layui-btn layui-btn-sm " lay-event="del">
+        <i class="fa fa-trash-o"></i>
+    </button>
+
+</script>
+<script src="js/index.js"></script>
+</html>
