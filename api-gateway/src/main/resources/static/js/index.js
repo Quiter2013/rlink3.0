@@ -1,4 +1,4 @@
-layui.use(['table','form','layer'], function(){
+layui.use(['table','form'], function(){
     var form = layui.form;
     form.on('switch(switchEnabled)',function(){
         vm.gateway.enabled = !vm.gateway.enabled;
@@ -10,8 +10,8 @@ layui.use(['table','form','layer'], function(){
         vm.gateway.stripPrefix = !vm.gateway.stripPrefix;
     });
 
-    var table = layui.table;
     //监听工具条
+    var table = layui.table;
     table.on('tool(routeFilter)', function(obj){
         if(obj.event === 'detail'){
             vm.detail(obj.data);
@@ -24,7 +24,6 @@ layui.use(['table','form','layer'], function(){
                     success: function(r){
                         if(r.code == 0){
                             layer.close(index);
-                            //active.reload();
                             //刷新当前页
                             $(".layui-laypage-btn")[0].click();
                             layer.msg("操作成功");
@@ -40,25 +39,22 @@ layui.use(['table','form','layer'], function(){
             vm.update(obj.data);
         }
     });
-
-    var active = {
-        reload: function(){
-            var routeReload = $('#routeReload');
-            //执行重载
-            table.reload('routeTableId', {
-                page: {
-                    curr: 1 //重新从第 1 页开始
+    form.on('switch(enableRoute)', function(data){
+        var id = $(data.elem).attr('name');
+        var enabled = data.elem.checked;//开关是否开启，true或者false
+        $.ajax({
+            type: "PUT",
+            url: '/gateway/routes/status?id='+id+"&isEnabled="+enabled,
+            contentType: "application/json",
+            success: function(result){
+                if(result.code === 0){
+                    layer.msg('操作成功');
+                    vm.reload();
+                }else{
+                    layer.alert(result.msg);
                 }
-                ,where: {
-                    keyword:routeReload.val()
-                }
-            });
-        }
-    };
-
-    $('.topTools .layui-btn').on('click', function(){
-        var type = $(this).data('type');
-        active[type] ? active[type].call(this) : '';
+            }
+        });
     });
 
     table.render({
@@ -91,12 +87,12 @@ layui.use(['table','form','layer'], function(){
              ,*/{field:'id', width:120, title: 'ID', sort: true,fixed: 'left'}
             ,{field:'path', width:240, title: '路径'}
             ,{field:'serviceId', width:240, title: '服务ID', sort: true}
-            ,{field:'url', width:360, title: 'URL'}
-            ,{field:'apiName',width:240, title: 'api名称'}
+            ,{field:'url', width:300, title: 'URL'}
+            ,{field:'apiName',width:120, title: 'api名称'}
             ,{field:'stripPrefix',width:120, title: '忽略前缀', sort: true}
             ,{field:'retryable', width:120, title: '是否重试'} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
             ,{field:'enabled',width:120, title: '是否开启', sort: true, templet: '#checkboxTpl', unresize: true}
-            ,{fixed: 'right', align:'left',title: '操作', toolbar: '#barTool'}
+            ,{fixed: 'right', minWidth:160,align:'left',title: '操作', toolbar: '#barTool'}
         ]]
     });
 
@@ -132,7 +128,7 @@ var vm = new Vue({
         },
         saveOrUpdate: function () {
             var method = vm.title == "新增" ? 'POST' : 'PUT';
-            $.ajax({
+            layui.$.ajax({
                 type: method,
                 url: '/gateway/routes',
                 contentType: "application/json",
@@ -142,17 +138,27 @@ var vm = new Vue({
                         layer.msg('操作成功');
                         vm.reload();
                     }else{
-                        alert(result.msg);
+                        layer.alert(result.msg);
                     }
                 }
             });
-
         },
         reload: function () {
             vm.showList = true;
+            var routeReload = layui.$('#routeReload');
+            //执行重载
+            layui.table.reload('routeTableId', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                    keyword: routeReload.val()
+                }
+            });
+            vm.gateway = {};
         },
         publish: function(){
-            $.ajax({
+            layui.$.ajax({
                 type: "POST",
                 url: '/gateway/routes/refresh',
                 contentType: "application/json",

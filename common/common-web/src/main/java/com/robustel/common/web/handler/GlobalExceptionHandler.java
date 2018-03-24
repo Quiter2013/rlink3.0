@@ -7,6 +7,7 @@ import com.robustel.common.web.exception.auth.UserTokenException;
 import com.robustel.common.web.vo.RtResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,5 +44,12 @@ public class GlobalExceptionHandler {
         response.setStatus(401);
         logger.error(ex.getMessage(),ex);
         return new RtResponse(ex.getStatus(), ex.getMessage(),null);
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public RtResponse duplicateKeyExceptionHandler(HttpServletResponse response, DuplicateKeyException ex) {
+        response.setStatus(500);
+        logger.error(ex.getMessage(),ex);
+        return new RtResponse(500, "数据重复",null);
     }
 }

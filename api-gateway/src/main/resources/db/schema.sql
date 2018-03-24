@@ -8,7 +8,7 @@ create table `gateway_api_define` (
   `strip_prefix` tinyint(1) default null,
   `api_name` varchar(255) default null,
   primary key (`id`)
-) engine=innodb default charset=utf8
+) engine=innodb default charset=utf8;
 
 
 INSERT INTO gateway_api_define (id, path, service_id, retryable, strip_prefix, url, enabled) VALUES ('pppp', '/pppp/**', null,0,1, 'http://localhost:8090', 1);

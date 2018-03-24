@@ -61,5 +61,14 @@ public class ApiGatewayController {
         return RtResponse.success();
     }
 
+    @RequestMapping(value="/routes/status",method = RequestMethod.PUT)
+    public RtResponse<RouteInfo> modifyRouteStatus(@RequestParam("id") String id,@RequestParam("isEnabled") Boolean isEnabled){
+        RouteInfo info = new RouteInfo();
+        info.setId(id);
+        info.setEnabled(isEnabled);
+        routeInfoService.updateSelectiveById(info);
+        return RtResponse.success();
+    }
+
 
 }
