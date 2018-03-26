@@ -27,7 +27,7 @@ public class AuthAutoConfiguration {
     private SecurityProperties securityProperties;
 
     @Bean
-    public CustomRemoteTokenServices customRemoteTokenServices(SecurityProperties securityProperties){
+    public CustomRemoteTokenServices customRemoteTokenServices(){
         CustomRemoteTokenServices resourceServerTokenServices = new CustomRemoteTokenServices();
         resourceServerTokenServices.setRestTemplateService(restTemplateService());
         return resourceServerTokenServices;

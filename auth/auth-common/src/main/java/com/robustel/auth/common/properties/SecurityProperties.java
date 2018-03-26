@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Data
-@ConfigurationProperties(prefix = "auth.security")
+@ConfigurationProperties(prefix = "custom.security")
 @Component(value = "globalSecurityProperties")
 public class SecurityProperties {
 	private OAuth2Properties oauth2 = new OAuth2Properties();
