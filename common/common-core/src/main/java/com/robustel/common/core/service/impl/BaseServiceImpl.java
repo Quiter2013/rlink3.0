@@ -2,6 +2,7 @@ package com.robustel.common.core.service.impl;
 
 import com.robustel.common.core.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
@@ -11,10 +12,9 @@ import java.util.List;
  * @author gaolinlou
  * @time 2016-1-22 12:24:14
  */
-public class BaseServiceImpl<M extends Mapper<T>, T> implements BaseService<T> {
+public abstract class BaseServiceImpl<M extends Mapper<T>, T> implements BaseService<T> {
 	@Autowired
 	protected M mapper;
-
 
 	@Override
 	public T selectOne(T entity) {

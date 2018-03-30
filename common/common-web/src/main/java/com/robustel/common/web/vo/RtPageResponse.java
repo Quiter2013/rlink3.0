@@ -1,10 +1,10 @@
 package com.robustel.common.web.vo;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.github.pagehelper.Page;
 import org.springframework.validation.annotation.Validated;
+
+import java.io.Serializable;
+import java.util.List;
 
 public class RtPageResponse<T extends List<?>> extends RtResponse<T> implements Serializable {
     /**
@@ -122,5 +122,19 @@ public class RtPageResponse<T extends List<?>> extends RtResponse<T> implements 
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+
+    /***
+     * success:操作成功返回 <br/>
+     * @author he.kui
+     * @param data
+     * 返回到前端的数据对象
+     * @return
+     * @since JDK 1.7
+     */
+    public static <E extends List<?>> RtPageResponse<E> successPage(E data) {
+        RtPageResponse result = new RtPageResponse(data,0,"success");
+        return result;
     }
 }
