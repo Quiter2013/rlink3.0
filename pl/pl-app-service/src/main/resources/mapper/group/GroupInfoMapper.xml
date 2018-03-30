@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.group.dao.GroupInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.group.entity.GroupInfo" >
+    <id column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="GROUP_CODE" property="groupCode" jdbcType="VARCHAR" />
+    <result column="GROUP_SHORT_NAME" property="groupShortName" jdbcType="VARCHAR" />
+    <result column="GROUP_TYPE" property="groupType" jdbcType="VARCHAR" />
+    <result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+    <result column="PARENT_GROUP_ID" property="parentGroupId" jdbcType="CHAR" />
+    <result column="ROOT_GROUP_ID" property="rootGroupId" jdbcType="CHAR" />
+    <result column="GROUP_FULL_NAME" property="groupFullName" jdbcType="VARCHAR" />
+    <result column="GROUP_FULL_CODE" property="groupFullCode" jdbcType="VARCHAR" />
+    <result column="GROUP_FULL_ID" property="groupFullId" jdbcType="VARCHAR" />
+    <result column="GROUP_LOGO" property="groupLogo" jdbcType="VARCHAR" />
+    <result column="GROUP_BG_IMG" property="groupBgImg" jdbcType="VARCHAR" />
+    <result column="SHOW_ORDER" property="showOrder" jdbcType="INTEGER" />
+    <result column="GP_DESC" property="gpDesc" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="SUPER_ADMIN_ID" property="superAdminId" jdbcType="CHAR" />
+    <result column="SUPER_ADMIN" property="superAdmin" jdbcType="VARCHAR" />
+    <result column="COUNTRY" property="country" jdbcType="VARCHAR" />
+    <result column="COUNTRY_CODE" property="countryCode" jdbcType="VARCHAR" />
+    <result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+    <result column="PROVINCE_CODE" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="VARCHAR" />
+    <result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+    <result column="DETAIL_ADDRESS" property="detailAddress" jdbcType="VARCHAR" />
+    <result column="LONGITUDE" property="longitude" jdbcType="REAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="REAL" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="DatagridResultMap" type="com.robustel.pl.app.group.vo.GroupInfoDatagridVo" >
+    <id column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="GROUP_CODE" property="groupCode" jdbcType="VARCHAR" />
+    <result column="GROUP_SHORT_NAME" property="groupShortName" jdbcType="VARCHAR" />
+    <result column="GROUP_TYPE" property="groupType" jdbcType="VARCHAR" />
+    <result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+    <result column="PARENT_GROUP_ID" property="parentGroupId" jdbcType="CHAR" />
+    <result column="PARENT_GROUP_NAME" property="parentGroupName" jdbcType="VARCHAR" />
+    <result column="ROOT_GROUP_ID" property="rootGroupId" jdbcType="CHAR" />
+    <result column="ROOT_GROUP_NAME" property="rootGroupName" jdbcType="VARCHAR" />
+    <result column="GROUP_FULL_NAME" property="groupFullName" jdbcType="VARCHAR" />
+    <result column="GROUP_FULL_CODE" property="groupFullCode" jdbcType="VARCHAR" />
+    <result column="GROUP_FULL_ID" property="groupFullId" jdbcType="VARCHAR" />
+    <result column="GROUP_LOGO" property="groupLogo" jdbcType="VARCHAR" />
+    <result column="GROUP_BG_IMG" property="groupBgImg" jdbcType="VARCHAR" />
+    <result column="SHOW_ORDER" property="showOrder" jdbcType="INTEGER" />
+    <result column="GP_DESC" property="gpDesc" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="SUPER_ADMIN_ID" property="superAdminId" jdbcType="CHAR" />
+    <result column="SUPER_ADMIN" property="superAdmin" jdbcType="VARCHAR" />
+    <result column="COUNTRY" property="country" jdbcType="VARCHAR" />
+    <result column="COUNTRY_CODE" property="countryCode" jdbcType="VARCHAR" />
+    <result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+    <result column="PROVINCE_CODE" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="VARCHAR" />
+    <result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+    <result column="DETAIL_ADDRESS" property="detailAddress" jdbcType="VARCHAR" />
+    <result column="LONGITUDE" property="longitude" jdbcType="REAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="REAL" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="ClientVo" type="com.robustel.pl.app.group.vo.ClientVo" >
+    <id column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="GROUP_CODE" property="groupCode" jdbcType="VARCHAR" />
+    <result column="GROUP_SHORT_NAME" property="groupShortName" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="SUPER_ADMIN_ID" property="superAdminId" jdbcType="CHAR" />
+    <result column="SUPER_ADMIN" property="superAdmin" jdbcType="VARCHAR" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    GROUP_ID, APP_ID, GROUP_NAME, GROUP_CODE, GROUP_SHORT_NAME, GROUP_TYPE, BIZ_TYPE, PARENT_GROUP_ID, 
+    ROOT_GROUP_ID, GROUP_FULL_NAME, GROUP_FULL_CODE, GROUP_FULL_ID, GROUP_LOGO, GROUP_BG_IMG, 
+    SHOW_ORDER, GP_DESC, STATE, SUPER_ADMIN_ID, SUPER_ADMIN, COUNTRY, COUNTRY_CODE, PROVINCE, 
+    PROVINCE_CODE, CITY, CITY_CODE, DETAIL_ADDRESS, LONGITUDE, LATITUDE, CREATE_USER_ID, 
+    CREATE_TIME, CREATER
+  </sql>
+  
+   <sql id="Base_Current_Column_List" >
+    group_.GROUP_ID, APP_ID, GROUP_NAME, GROUP_CODE, GROUP_SHORT_NAME, GROUP_TYPE, BIZ_TYPE, PARENT_GROUP_ID, 
+    ROOT_GROUP_ID, GROUP_FULL_NAME, GROUP_FULL_CODE, GROUP_FULL_ID, GROUP_LOGO, GROUP_BG_IMG, 
+    SHOW_ORDER, GP_DESC, group_.STATE, SUPER_ADMIN_ID, SUPER_ADMIN, COUNTRY, COUNTRY_CODE, PROVINCE, 
+    PROVINCE_CODE, CITY, CITY_CODE, DETAIL_ADDRESS, LONGITUDE, LATITUDE, CREATE_USER_ID, 
+    CREATE_TIME, CREATER
+  </sql>
+  
+
+  
+  <select id="queryCurrentUserGroupInfo" resultMap="DatagridResultMap" parameterType="java.lang.String" >
+    SELECT root.GROUP_ID, root.APP_ID, root.GROUP_NAME, root.GROUP_CODE, root.GROUP_SHORT_NAME, 
+      root.GROUP_TYPE, root.BIZ_TYPE, root.PARENT_GROUP_ID, root.ROOT_GROUP_ID, 
+      root.SHOW_ORDER, root.GP_DESC, root.STATE
+	FROM tbs_pl_group_info root 
+	LEFT JOIN tbs_pl_group_member member ON root.GROUP_ID = member.GROUP_ID 
+	WHERE member.USER_ID = #{userId,jdbcType=VARCHAR} AND root.APP_ID = #{appId, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="findRootUsers" resultMap="BaseResultMap">
+      select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_group_info
+    where GROUP_TYPE = 0
+  </select>
+  
+  <delete id="deleteByGroupFullId" parameterType="java.lang.String" >
+    delete from tbs_pl_group_info
+    where GROUP_FULL_ID like concat('%', #{groupId,jdbcType=CHAR} ,'%')
+  </delete>
+  
+  <select id="queryList2GroupManage" resultMap="DatagridResultMap" parameterType="com.robustel.pl.app.group.vo.ReqGroupInfoVo" >
+    SELECT 
+	  bgi.GROUP_ID, bgi.APP_ID, bgi.GROUP_NAME, bgi.GROUP_CODE, bgi.GROUP_SHORT_NAME, bgi.GROUP_TYPE, bgi.BIZ_TYPE, bgi.PARENT_GROUP_ID, 
+	  pgroup.GROUP_NAME AS  PARENT_GROUP_NAME, bgi.ROOT_GROUP_ID, rgroup.GROUP_NAME AS ROOT_GROUP_NAME,bgi.GROUP_FULL_NAME, bgi.GROUP_FULL_CODE, 
+	  bgi.GROUP_FULL_ID, bgi.GROUP_LOGO, bgi.GROUP_BG_IMG, bgi.SHOW_ORDER, bgi.GP_DESC, bgi.STATE, bgi.SUPER_ADMIN_ID, bgi.SUPER_ADMIN, 
+	  bgi.COUNTRY, bgi.COUNTRY_CODE, bgi.PROVINCE, bgi.PROVINCE_CODE, bgi.CITY, bgi.CITY_CODE, bgi.DETAIL_ADDRESS, bgi.LONGITUDE, bgi.LATITUDE, 
+	  bgi.CREATE_USER_ID, bgi.CREATE_TIME, bgi.CREATER 
+	FROM
+	  tbs_pl_group_info bgi
+	LEFT JOIN tbs_pl_group_info pgroup ON bgi.PARENT_GROUP_ID = pgroup.GROUP_ID
+	LEFT JOIN tbs_pl_group_info rgroup ON bgi.ROOT_GROUP_ID = rgroup.GROUP_ID
+    where 1 = 1
+    <if test="appId != null" >
+      and bgi.APP_ID = #{appId,jdbcType=VARCHAR}
+    </if>
+    <if test="groupName != null" >
+      and bgi.GROUP_NAME like concat('%', #{groupName,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="groupCode != null" >
+      and bgi.GROUP_CODE = #{groupCode,jdbcType=VARCHAR}
+    </if>
+    <if test="groupShortName != null" >
+      and bgi.GROUP_SHORT_NAME = #{groupShortName,jdbcType=VARCHAR}
+    </if>
+    <if test="groupType != null" >
+      and bgi.GROUP_TYPE = #{groupType,jdbcType=VARCHAR}
+    </if>
+    <if test="rootGroupId != null" >
+      and bgi.ROOT_GROUP_ID = #{rootGroupId,jdbcType=CHAR}
+    </if>
+    <if test="state != null" >
+      and bgi.STATE = #{state,jdbcType=VARCHAR}
+    </if>
+    <if test="bizType != null" >
+      and bgi.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+    </if>
+    <if test="keyword != null" >
+      and (
+      	bgi.GROUP_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR 
+      	bgi.GROUP_CODE like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR 
+      	bgi.GROUP_SHORT_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+      )
+    </if>
+  </select>
+  
+  <select id="queryRootGroupList" resultMap="DatagridResultMap" parameterType="java.lang.String" >
+    SELECT 
+	  bgi.GROUP_ID, bgi.APP_ID, bgi.GROUP_NAME, bgi.GROUP_CODE, bgi.GROUP_SHORT_NAME, bgi.GROUP_TYPE, bgi.BIZ_TYPE, bgi.PARENT_GROUP_ID, pgroup.GROUP_NAME AS  PARENT_GROUP_NAME, bgi.ROOT_GROUP_ID, rgroup.GROUP_NAME AS ROOT_GROUP_NAME,bgi.GROUP_FULL_NAME, bgi.GROUP_FULL_CODE, bgi.GROUP_FULL_ID, bgi.GROUP_LOGO, bgi.GROUP_BG_IMG, bgi.SHOW_ORDER, bgi.GP_DESC, bgi.STATE, bgi.SUPER_ADMIN_ID, bgi.SUPER_ADMIN, bgi.COUNTRY, bgi.COUNTRY_CODE, bgi.PROVINCE, bgi.PROVINCE_CODE, bgi.CITY, bgi.CITY_CODE, bgi.DETAIL_ADDRESS, bgi.LONGITUDE, bgi.LATITUDE, bgi.CREATE_USER_ID, bgi.CREATE_TIME, bgi.CREATER 
+	FROM
+	  tbs_pl_group_info bgi
+	LEFT JOIN tbs_pl_group_info pgroup ON bgi.PARENT_GROUP_ID = pgroup.GROUP_ID
+	LEFT JOIN tbs_pl_group_info rgroup ON bgi.ROOT_GROUP_ID = rgroup.GROUP_ID
+    where bgi.APP_ID = #{appId,jdbcType=VARCHAR} and (bgi.ROOT_GROUP_ID is null OR bgi.ROOT_GROUP_ID = '')
+    order by bgi.CREATE_TIME desc
+  </select>
+  
+  <select id="queryGroupTreeDataByRootGroupId" resultMap="DatagridResultMap" parameterType="java.lang.String" >
+    SELECT sub.GROUP_ID, sub.APP_ID, sub.GROUP_NAME, sub.GROUP_CODE, sub.GROUP_SHORT_NAME, sub.GROUP_TYPE, sub.BIZ_TYPE, sub.PARENT_GROUP_ID, sub.ROOT_GROUP_ID, sub.SHOW_ORDER, sub.GP_DESC, sub.STATE
+	FROM tbs_pl_group_info sub
+	WHERE sub.ROOT_GROUP_ID = #{rootGroupId,jdbcType=CHAR}
+	UNION 
+	SELECT root.GROUP_ID, root.APP_ID, root.GROUP_NAME, root.GROUP_CODE, root.GROUP_SHORT_NAME, root.GROUP_TYPE, root.BIZ_TYPE, root.PARENT_GROUP_ID, root.ROOT_GROUP_ID, root.SHOW_ORDER, root.GP_DESC, root.STATE
+	FROM tbs_pl_group_info root
+	WHERE root.GROUP_ID = #{rootGroupId,jdbcType=CHAR}
+  </select>
+  
+  <select id="qeuryGroups2Loginer" resultMap="DatagridResultMap" parameterType="com.robustel.pl.app.group.vo.ReqGroupInfoVo" >
+    SELECT 
+	  bgi.GROUP_ID, bgi.APP_ID, bgi.GROUP_NAME, bgi.GROUP_CODE, bgi.GROUP_SHORT_NAME, bgi.GROUP_TYPE, 
+	  bgi.BIZ_TYPE, bgi.PARENT_GROUP_ID, pgroup.GROUP_NAME AS  PARENT_GROUP_NAME, bgi.ROOT_GROUP_ID, 
+	  rgroup.GROUP_NAME AS ROOT_GROUP_NAME,bgi.GROUP_FULL_NAME, bgi.GROUP_FULL_CODE, bgi.GROUP_FULL_ID, 
+	  bgi.GROUP_LOGO, bgi.GROUP_BG_IMG, bgi.SHOW_ORDER, bgi.GP_DESC, bgi.STATE, bgi.SUPER_ADMIN_ID, 
+	  bgi.SUPER_ADMIN, bgi.COUNTRY, bgi.COUNTRY_CODE, bgi.PROVINCE, bgi.PROVINCE_CODE, bgi.CITY, 
+	  bgi.CITY_CODE, bgi.DETAIL_ADDRESS, bgi.LONGITUDE, bgi.LATITUDE, bgi.CREATE_USER_ID, bgi.CREATE_TIME, 
+	  bgi.CREATER 
+	FROM
+	  tbs_pl_group_info bgi
+	LEFT JOIN tbs_pl_group_info pgroup ON bgi.PARENT_GROUP_ID = pgroup.GROUP_ID
+	LEFT JOIN tbs_pl_group_info rgroup ON bgi.ROOT_GROUP_ID = rgroup.GROUP_ID
+    where (bgi.GROUP_ID = #{rootGroupId,jdbcType=CHAR} OR bgi.ROOT_GROUP_ID = #{rootGroupId,jdbcType=CHAR})
+    <if test="keyword != null">
+      and (
+      	1 != 1 OR 
+      	bgi.GROUP_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR
+      	bgi.GROUP_CODE like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+      )
+    </if>
+    ORDER BY bgi.CREATE_TIME DESC
+  </select>
+  
+  <select id="selectByCreaterId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_group_info
+    where CREATE_USER_ID = #{objectId,jdbcType=CHAR}
+  </select>
+  
+  <select id="queryClientList" resultMap="ClientVo" parameterType="com.robustel.pl.app.group.vo.ReqGroupInfoVo" >
+    SELECT gi.GROUP_ID, gi.APP_ID, gi.GROUP_NAME, gi.GROUP_CODE, gi.GROUP_SHORT_NAME, gi.STATE, gi.SUPER_ADMIN_ID,
+		gi.CREATE_USER_ID, gi.CREATE_TIME, gi.CREATER, ub.LOGIN_ACCOUNT, ub.USER_NAME as SUPER_ADMIN, ub.EMAIL
+	FROM tbs_pl_group_info gi
+	LEFT JOIN tbs_pl_user_base_info ub ON gi.SUPER_ADMIN_ID = ub.USER_ID
+	WHERE gi.BIZ_TYPE = 2
+	<if test="appId != null" >
+      and gi.APP_ID = #{appId,jdbcType=VARCHAR}
+    </if>
+    <if test="groupName != null" >
+      and gi.GROUP_NAME like concat('%', #{groupName,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="state != null" >
+      and gi.STATE = #{state,jdbcType=VARCHAR}
+    </if>
+    <if test="keyword != null">
+      and (
+      	gi.GROUP_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR 
+      	ub.USER_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR 
+      	ub.LOGIN_ACCOUNT like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR 
+      	ub.EMAIL like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR 
+      	gi.STATE like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+      )
+    </if>
+    
+    order by gi.CREATE_TIME desc
+  </select>
+  
+  <select id="judgeExistsByGroupNameAndGroupId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_group_info
+    where GROUP_NAME = #{groupName,jdbcType=CHAR}
+    <if test="groupId != null" >
+      and GROUP_ID != #{groupId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <select id="validateUnique" resultType="int" parameterType="java.lang.String" >
+    select count(GROUP_NAME)
+    from tbs_pl_group_info
+    where GROUP_NAME = #{groupName,jdbcType=CHAR}
+  </select>
+  
+  <select id="queryManagerGroupInfo" resultMap="DatagridResultMap" parameterType="java.lang.String" >
+  	SELECT res.GROUP_ID, res.APP_ID, res.GROUP_NAME, res.GROUP_CODE, res.GROUP_SHORT_NAME, res.GROUP_TYPE, res.BIZ_TYPE, res.PARENT_GROUP_ID, 
+	  res.GROUP_NAME AS  PARENT_GROUP_NAME, res.ROOT_GROUP_ID, res.GROUP_NAME AS ROOT_GROUP_NAME,res.GROUP_FULL_NAME, res.GROUP_FULL_CODE, 
+	  res.GROUP_FULL_ID, res.GROUP_LOGO, res.GROUP_BG_IMG, res.SHOW_ORDER, res.GP_DESC, res.STATE, res.SUPER_ADMIN_ID, res.SUPER_ADMIN, 
+	  res.COUNTRY, res.COUNTRY_CODE, res.PROVINCE, res.PROVINCE_CODE, res.CITY, res.CITY_CODE, res.DETAIL_ADDRESS, res.LONGITUDE, res.LATITUDE, 
+	  res.CREATE_USER_ID, res.CREATE_TIME, res.CREATER 
+	FROM (
+	    SELECT gi.GROUP_ID, gi.APP_ID, gi.GROUP_NAME, gi.GROUP_CODE, gi.GROUP_SHORT_NAME, gi.GROUP_TYPE, gi.BIZ_TYPE, gi.PARENT_GROUP_ID, 
+		  gi.GROUP_NAME AS  PARENT_GROUP_NAME, gi.ROOT_GROUP_ID, gi.GROUP_NAME AS ROOT_GROUP_NAME,gi.GROUP_FULL_NAME, gi.GROUP_FULL_CODE, 
+		  gi.GROUP_FULL_ID, gi.GROUP_LOGO, gi.GROUP_BG_IMG, gi.SHOW_ORDER, gi.GP_DESC, gi.STATE, gi.SUPER_ADMIN_ID, gi.SUPER_ADMIN, 
+		  gi.COUNTRY, gi.COUNTRY_CODE, gi.PROVINCE, gi.PROVINCE_CODE, gi.CITY, gi.CITY_CODE, gi.DETAIL_ADDRESS, gi.LONGITUDE, gi.LATITUDE, 
+		  gi.CREATE_USER_ID, gi.CREATE_TIME, gi.CREATER 
+		FROM tbs_pl_group_info gi
+		WHERE gi.SUPER_ADMIN_ID = #{userId,jdbcType=CHAR}
+		UNION 
+		SELECT sub.GROUP_ID, sub.APP_ID, sub.GROUP_NAME, sub.GROUP_CODE, sub.GROUP_SHORT_NAME, sub.GROUP_TYPE, sub.BIZ_TYPE, sub.PARENT_GROUP_ID, 
+		  sub.GROUP_NAME AS  PARENT_GROUP_NAME, sub.ROOT_GROUP_ID, sub.GROUP_NAME AS ROOT_GROUP_NAME,sub.GROUP_FULL_NAME, sub.GROUP_FULL_CODE, 
+		  sub.GROUP_FULL_ID, sub.GROUP_LOGO, sub.GROUP_BG_IMG, sub.SHOW_ORDER, sub.GP_DESC, sub.STATE, sub.SUPER_ADMIN_ID, sub.SUPER_ADMIN, 
+		  sub.COUNTRY, sub.COUNTRY_CODE, sub.PROVINCE, sub.PROVINCE_CODE, sub.CITY, sub.CITY_CODE, sub.DETAIL_ADDRESS, sub.LONGITUDE, sub.LATITUDE, 
+		  sub.CREATE_USER_ID, sub.CREATE_TIME, sub.CREATER 
+		FROM tbs_pl_group_info pa
+		LEFT JOIN tbs_pl_group_info sub ON pa.GROUP_ID = sub.PARENT_GROUP_ID AND sub.SUPER_ADMIN_ID != #{userId,jdbcType=CHAR}
+		WHERE pa.SUPER_ADMIN_ID = #{userId,jdbcType=CHAR}
+		UNION 
+		SELECT sub.GROUP_ID, sub.APP_ID, sub.GROUP_NAME, sub.GROUP_CODE, sub.GROUP_SHORT_NAME, sub.GROUP_TYPE, sub.BIZ_TYPE, sub.PARENT_GROUP_ID, 
+		  sub.GROUP_NAME AS  PARENT_GROUP_NAME, sub.ROOT_GROUP_ID, sub.GROUP_NAME AS ROOT_GROUP_NAME,sub.GROUP_FULL_NAME, sub.GROUP_FULL_CODE, 
+		  sub.GROUP_FULL_ID, sub.GROUP_LOGO, sub.GROUP_BG_IMG, sub.SHOW_ORDER, sub.GP_DESC, sub.STATE, sub.SUPER_ADMIN_ID, sub.SUPER_ADMIN, 
+		  sub.COUNTRY, sub.COUNTRY_CODE, sub.PROVINCE, sub.PROVINCE_CODE, sub.CITY, sub.CITY_CODE, sub.DETAIL_ADDRESS, sub.LONGITUDE, sub.LATITUDE, 
+		  sub.CREATE_USER_ID, sub.CREATE_TIME, sub.CREATER 
+		FROM tbs_pl_group_info pa
+		LEFT JOIN tbs_pl_group_info sub ON pa.GROUP_ID = sub.ROOT_GROUP_ID AND sub.SUPER_ADMIN_ID != #{userId,jdbcType=CHAR}
+		WHERE pa.SUPER_ADMIN_ID = #{userId,jdbcType=CHAR}
+	) res
+	WHERE res.GROUP_ID IS NOT NULL
+  </select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.management.dao.AppMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.management.entity.App" >
+    <id column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+    <result column="APP_CODE" property="appCode" jdbcType="VARCHAR" />
+    <result column="IS_ONLINE" property="isOnline" jdbcType="VARCHAR" />
+    <result column="APP_TYPE" property="appType" jdbcType="VARCHAR" />
+    <result column="APP_PLATFORM_ID" property="appPlatformId" jdbcType="CHAR" />
+    <result column="APP_PLATFORM_NAME" property="appPlatformName" jdbcType="CHAR" />
+    <result column="APP_DESC" property="appDesc" jdbcType="VARCHAR" />
+    <result column="APP_LOG_TACTICS" property="appLogTactics" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_ID, APP_NAME, APP_CODE, IS_ONLINE, APP_TYPE, APP_PLATFORM_ID, APP_PLATFORM_NAME, APP_DESC, APP_LOG_TACTICS
+  </sql>
+
+  <select id="queryList" resultType="java.util.HashMap" parameterType="com.robustel.pl.app.management.entity.App" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_app
+    where 1 = 1
+    <if test="appName != null" >
+      and APP_NAME like concat('%', #{appName,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="appCode != null" >
+      and APP_CODE like concat('%',  #{appCode,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="isOnline != null" >
+      and IS_ONLINE = #{isOnline,jdbcType=VARCHAR}
+    </if>
+    <if test="appType != null" >
+      and APP_TYPE = #{appType,jdbcType=VARCHAR}
+    </if>
+    <if test="appLogTactics != null" >
+      and APP_LOG_TACTICS = #{appLogTactics,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <select id="queryAppList2User" resultType="java.util.HashMap" parameterType="java.util.Map" >
+    select app.APP_ID, app.APP_NAME, app.APP_CODE, app.IS_ONLINE, app.APP_TYPE, app.APP_PLATFORM_ID, app.APP_PLATFORM_NAME, app.APP_DESC, app.APP_LOG_TACTICS, ua.IS_DEFAULT
+    from tbs_pl_app app
+    left join tbs_pl_user_app ua on app.APP_ID = ua.APP_ID
+    where ua.USER_ID = #{userId,jdbcType=VARCHAR}
+    <if test="appName != null" >
+      and app.APP_NAME like concat('%', #{appName,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="appCode != null" >
+      and app.APP_CODE like concat('%',  #{appCode,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="isOnline != null" >
+      and app.IS_ONLINE = #{isOnline,jdbcType=VARCHAR}
+    </if>
+    <if test="appType != null" >
+      and app.APP_TYPE = #{appType,jdbcType=VARCHAR}
+    </if>
+    <if test="appLogTactics != null" >
+      and app.APP_LOG_TACTICS = #{appLogTactics,jdbcType=VARCHAR}
+    </if>
+  </select>
+</mapper>

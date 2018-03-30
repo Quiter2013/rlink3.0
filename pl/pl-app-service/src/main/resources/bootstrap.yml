@@ -65,7 +65,7 @@ pagehelper:
 eureka:
   client:
     service-url:
-    defaultZone: http://discovery:9761/eureka/
+      defaultZone: http://discovery:9761/eureka/
 endpoints:
   shutdown:
     enabled: true

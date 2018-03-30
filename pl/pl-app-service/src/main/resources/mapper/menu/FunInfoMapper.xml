@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.menu.dao.FunInfoMapper" >
+  
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.menu.entity.FunInfo" >
+    <id column="FUN_ID" property="funId" jdbcType="CHAR" />
+    <result column="MODEL_ID" property="modelId" jdbcType="CHAR" />
+    <result column="FUN_NAME" property="funName" jdbcType="VARCHAR" />
+    <result column="FUN_CODE" property="funCode" jdbcType="VARCHAR" />
+    <result column="EXECUTE_METHOD" property="executeMethod" jdbcType="VARCHAR" />
+    <result column="PARAM" property="param" jdbcType="VARCHAR" />
+    <result column="KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+    <result column="EXTEND1" property="extend1" jdbcType="VARCHAR" />
+    <result column="EXTEND2" property="extend2" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="REQUEST_URL" property="requestUrl" jdbcType="VARCHAR" />
+    <result column="REQUEST_TYPE" property="requestType" jdbcType="CHAR" />
+    <result column="IS_VALID_LOGIN" property="isValidLogin" jdbcType="CHAR" />
+  </resultMap>
+  
+  <resultMap id="FunResVoResult" type="com.robustel.pl.app.menu.vo.FunResVo" >
+    <id column="FUN_ID" property="funId" jdbcType="CHAR" />
+    <result column="MODEL_ID" property="modelId" jdbcType="CHAR" />
+    <result column="FUN_NAME" property="funName" jdbcType="VARCHAR" />
+    <result column="FUN_CODE" property="funCode" jdbcType="VARCHAR" />
+    <result column="EXECUTE_METHOD" property="executeMethod" jdbcType="VARCHAR" />
+    <result column="PARAM" property="param" jdbcType="VARCHAR" />
+    <result column="KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+    <result column="EXTEND1" property="extend1" jdbcType="VARCHAR" />
+    <result column="EXTEND2" property="extend2" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="REQUEST_URL" property="requestUrl" jdbcType="VARCHAR" />
+    <result column="REQUEST_TYPE" property="requestType" jdbcType="CHAR" />
+    <result column="IS_VALID_LOGIN" property="isValidLogin" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    FUN_ID, MODEL_ID, FUN_NAME, FUN_CODE, EXECUTE_METHOD, PARAM, KEY_CODE, EXTEND1, EXTEND2, 
+    REMARK, REQUEST_URL, REQUEST_TYPE, IS_VALID_LOGIN
+  </sql>
+
+  <delete id="deleteByModelId" parameterType="java.lang.String" >
+    delete from tbs_pl_fun_info
+    where MODEL_ID = #{modelId,jdbcType=CHAR}
+  </delete>
+  <insert id="batchInsert" parameterType="java.util.List" >
+  	<selectKey resultType="long" keyProperty="id" order="AFTER">  
+        SELECT LAST_INSERT_ID()  
+    </selectKey>
+    insert into tbs_pl_fun_info (FUN_ID, MODEL_ID, 
+      FUN_NAME, FUN_CODE, EXECUTE_METHOD, 
+      PARAM, KEY_CODE, EXTEND1, EXTEND2, 
+      REMARK, REQUEST_URL, REQUEST_TYPE, IS_VALID_LOGIN) values 
+      <foreach collection="funs" item="fun" index="index" separator=",">
+      (#{fun.funId,jdbcType=CHAR}, #{fun.modelId,jdbcType=CHAR},  
+      #{fun.funName,jdbcType=VARCHAR}, #{fun.funCode,jdbcType=VARCHAR}, #{fun.executeMethod,jdbcType=VARCHAR}, 
+      #{fun.param,jdbcType=VARCHAR}, #{fun.keyCode,jdbcType=VARCHAR}, #{fun.extend1,jdbcType=VARCHAR}, #{fun.extend2,jdbcType=VARCHAR}, 
+      #{fun.remark,jdbcType=VARCHAR}, #{requestUrl,jdbcType=VARCHAR}, #{requestType,jdbcType=VARCHAR}, #{isValidLogin,jdbcType=VARCHAR})
+      </foreach>
+  </insert>
+  <select id="queryList2Menu" resultMap="FunResVoResult" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_fun_info
+    where MODEL_ID = #{menuId,jdbcType=CHAR}
+  </select>
+  <select id="queryList2Manage" resultMap="FunResVoResult" parameterType="com.robustel.pl.app.menu.entity.FunInfo" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_fun_info
+    where 1 = 1
+    <if test="modelId != null" >
+        and MODEL_ID = #{modelId,jdbcType=CHAR}
+      </if>
+      <if test="funName != null" >
+        and FUN_NAME like concat('%', #{funName,jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="funCode != null" >
+        and FUN_CODE = #{funCode,jdbcType=VARCHAR}
+      </if>
+      <if test="keyword != null">
+        and (
+        	FUN_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%') OR 
+        	FUN_CODE like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+        )
+      </if>
+  </select>
+  <select id="queryList2User" resultMap="FunResVoResult" parameterType="java.lang.String" >
+    SELECT DISTINCT fi.FUN_ID, fi.MODEL_ID, fi.FUN_NAME, fi.FUN_CODE, fi.EXECUTE_METHOD, fi.PARAM, 
+    fi.KEY_CODE, fi.EXTEND1, fi.EXTEND2, fi.REMARK, fi.REQUEST_URL, fi.REQUEST_TYPE, fi.IS_VALID_LOGIN
+	FROM tbs_pl_role_fun rf
+	LEFT JOIN tbs_pl_fun_info fi ON rf.FUN_ID = fi.FUN_ID
+	WHERE rf.ROLE_ID IN (
+		SELECT DISTINCT gr.ROLE_ID
+		FROM tbs_pl_group_member gm
+		LEFT JOIN tbs_pl_group_role gr ON gr.GROUP_ID = gm.GROUP_ID
+		WHERE gm.USER_ID = #{userId,jdbcType=CHAR} AND gm.GROUP_ID IN (
+			SELECT GROUP_ID
+			FROM tbs_pl_group_info gi
+			WHERE gi.ROOT_GROUP_ID = #{rootGroupId,jdbcType=CHAR}
+		)
+	)
+  </select>
+  <select id="queryList2App" resultMap="FunResVoResult" parameterType="java.lang.String" >
+    SELECT distinct fi.FUN_ID, fi.MODEL_ID, fi.FUN_NAME, fi.FUN_CODE, fi.EXECUTE_METHOD, fi.PARAM, fi.KEY_CODE, fi.REQUEST_URL, 
+		fi.REQUEST_TYPE, fi.IS_VALID_LOGIN, fi.EXTEND1, fi.EXTEND2, fi.REMARK
+	FROM tbs_pl_fun_info fi
+	LEFT JOIN tbs_pl_fun_model fm ON fm.MODEL_ID = fi.MODEL_ID
+	WHERE fm.APP_ID = #{appId,jdbcType=CHAR} and fi.FUN_ID is not null
+  </select>
+</mapper>

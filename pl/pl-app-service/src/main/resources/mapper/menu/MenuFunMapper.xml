@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.menu.dao.MenuFunMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.menu.entity.MenuFun" >
+    <id column="MENU_FUN_ID" property="menuFunId" jdbcType="CHAR" />
+    <result column="MENU_ID" property="menuId" jdbcType="CHAR" />
+    <result column="FUN_ID" property="funId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+  </resultMap>
+  
+  <resultMap id="MenuFunVo" type="com.robustel.pl.app.menu.vo.MenuFunVo" >
+    <id column="FUN_ID" property="funId" jdbcType="CHAR" />
+    <result column="MODEL_ID" property="modelId" jdbcType="CHAR" />
+    <result column="FUN_NAME" property="funName" jdbcType="VARCHAR" />
+    <result column="FUN_CODE" property="funCode" jdbcType="VARCHAR" />
+    <result column="EXECUTE_METHOD" property="executeMethod" jdbcType="VARCHAR" />
+    <result column="PARAM" property="param" jdbcType="VARCHAR" />
+    <result column="KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+    <result column="EXTEND1" property="extend1" jdbcType="VARCHAR" />
+    <result column="EXTEND2" property="extend2" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="REQUEST_URL" property="requestUrl" jdbcType="VARCHAR" />
+    <result column="REQUEST_TYPE" property="requestType" jdbcType="CHAR" />
+    <result column="IS_VALID_LOGIN" property="isValidLogin" jdbcType="CHAR" />
+    <result column="MENU_ID" property="menuId" jdbcType="CHAR" />
+    <result column="MENU_NAME" property="menuName" jdbcType="VARCHAR" />
+    <result column="MENU_NAME_LANGUAGE_KEY" property="menuNameLanguageKey" jdbcType="VARCHAR" />
+    <result column="MENU_CODE" property="menuCode" jdbcType="VARCHAR" />
+    <result column="MENU_TYPE" property="menuType" jdbcType="VARCHAR" />
+    <result column="MENU_DESC" property="menuDesc" jdbcType="VARCHAR" />
+    <result column="LOAD_RES" property="loadRes" jdbcType="VARCHAR" />
+    <result column="LOAD_PARAM" property="loadParam" jdbcType="VARCHAR" />
+    <result column="SHOW_WAY" property="showWay" jdbcType="VARCHAR" />
+    <result column="SHOW_ORDER" property="showOrder" jdbcType="INTEGER" />
+    <result column="PARENT_ID" property="parentId" jdbcType="CHAR" />
+    <result column="EXPAND_ICON" property="expandIcon" jdbcType="VARCHAR" />
+    <result column="FOLD_ICON" property="foldIcon" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    MENU_FUN_ID, MENU_ID, FUN_ID, CREATE_TIME, CREATER_ID
+  </sql>
+  
+  <select id="queryFunByMenuId" resultMap="MenuFunVo" parameterType="java.lang.String" >
+    SELECT fi.FUN_ID, fi.MODEL_ID, fi.FUN_NAME, fi.FUN_CODE, fi.EXECUTE_METHOD, fi.PARAM, fi.KEY_CODE, fi.REQUEST_URL, fi.REQUEST_TYPE, fi.IS_VALID_LOGIN, fi.EXTEND1, fi.EXTEND2, fi.REMARK, mf.MENU_ID 
+	FROM  tbs_pl_menu_fun mf
+	JOIN tbs_pl_fun_info fi ON mf.FUN_ID = fi.FUN_ID 
+    where mf.MENU_ID = #{menuId,jdbcType=CHAR}
+    <if test="keyword != null">
+        and (
+        	fi.FUN_NAME = #{keyword,jdbcType=VARCHAR} OR
+        	fi.FUN_CODE = #{keyword,jdbcType=VARCHAR}
+        )
+    </if>
+  </select>
+  
+  <select id="queryFunByAppId" resultMap="MenuFunVo" parameterType="java.lang.String" >
+    SELECT DISTINCT mf.FUN_ID, mf.MODEL_ID, mf.FUN_NAME, mf.FUN_CODE, mf.EXECUTE_METHOD, mf.PARAM, mf.KEY_CODE, mf.REQUEST_URL, mf.REQUEST_TYPE, mf.IS_VALID_LOGIN, mf.EXTEND1, mf.EXTEND2, mf.REMARK, mf.MENU_ID 
+	FROM tbs_pl_app_menu am 
+	LEFT JOIN (
+		SELECT fi.FUN_ID, fi.MODEL_ID, fi.FUN_NAME, fi.FUN_CODE, fi.EXECUTE_METHOD, fi.PARAM, fi.KEY_CODE, fi.REQUEST_URL, fi.REQUEST_TYPE, fi.IS_VALID_LOGIN, fi.EXTEND1, fi.EXTEND2, fi.REMARK, mf.MENU_ID 
+		FROM  tbs_pl_menu_fun mf
+		LEFT JOIN tbs_pl_fun_info fi ON mf.FUN_ID = fi.FUN_ID 
+	) mf ON am.MENU_ID = mf.MENU_ID 
+	WHERE mf.FUN_ID IS NOT NULL AND am.APP_ID =  #{appId,jdbcType=CHAR}
+  </select>
+  
+  <insert id="mount" parameterType="java.util.List">
+  	insert into tbs_pl_menu_fun (MENU_FUN_ID, MENU_ID, FUN_ID, CREATE_TIME, CREATER_ID)
+    values
+    <foreach collection="records" item="record" index="index" separator=","> 
+    (#{record.menuFunId,jdbcType=CHAR}, #{record.menuId,jdbcType=CHAR}, #{record.funId,jdbcType=CHAR}, 
+      #{record.createTime,jdbcType=BIGINT}, #{record.createrId,jdbcType=CHAR})
+    </foreach>
+  </insert>
+  
+  <select id="queryMenu2User" resultMap="MenuFunVo" parameterType="java.lang.String">
+	SELECT DISTINCT result.MENU_ID, result.APP_ID, result.MENU_NAME, result.MENU_NAME_LANGUAGE_KEY, result.MENU_CODE, result.MENU_TYPE, result.MENU_DESC, result.LOAD_RES, result.LOAD_PARAM, 
+			result.SHOW_WAY, result.SHOW_ORDER, result.PARENT_ID, result.OPEN_CLOSE_STATE, result.EXPAND_ICON, result.FOLD_ICON, result.CREATE_TIME, 
+			result.CREATER, result.CREATER_ID, result.EXPAND_ICON, result.FOLD_ICON
+	FROM (
+		SELECT DISTINCT menu.MENU_ID, menu.APP_ID, menu.MENU_NAME, menu.MENU_NAME_LANGUAGE_KEY, menu.MENU_CODE, menu.MENU_TYPE, menu.MENU_DESC, menu.LOAD_RES, menu.LOAD_PARAM, 
+				menu.SHOW_WAY, menu.SHOW_ORDER, menu.PARENT_ID, menu.OPEN_CLOSE_STATE, menu.EXPAND_ICON, menu.FOLD_ICON, menu.CREATE_TIME, 
+				menu.CREATER, menu.CREATER_ID
+		FROM tbs_pl_menu_fun mf
+		LEFT JOIN tbs_pl_app_menu menu ON menu.MENU_ID = mf.MENU_ID
+		JOIN (
+			SELECT DISTINCT rf.FUN_ID
+			FROM tbs_pl_role_fun rf
+			LEFT JOIN tbs_pl_user_role ur ON rf.ROLE_ID = ur.ROLE_ID 
+			LEFT JOIN tbs_pl_role_info ri ON rf.ROLE_ID = ri.ROLE_ID 
+			WHERE ur.USER_ID = #{userId,jdbcType=CHAR} AND ri.APP_ID = #{appId,jdbcType=CHAR}
+		) funVi ON mf.FUN_ID = funVi.FUN_ID
+		UNION ALL
+		SELECT DISTINCT parent.MENU_ID, parent.APP_ID, parent.MENU_NAME, parent.MENU_NAME_LANGUAGE_KEY, parent.MENU_CODE, parent.MENU_TYPE, parent.MENU_DESC, parent.LOAD_RES, parent.LOAD_PARAM, 
+				parent.SHOW_WAY, parent.SHOW_ORDER, parent.PARENT_ID, parent.OPEN_CLOSE_STATE, parent.EXPAND_ICON, parent.FOLD_ICON, parent.CREATE_TIME, 
+				parent.CREATER, parent.CREATER_ID
+		FROM (
+			SELECT DISTINCT menu.PARENT_ID
+			FROM tbs_pl_menu_fun mf
+			LEFT JOIN tbs_pl_app_menu menu ON menu.MENU_ID = mf.MENU_ID
+			JOIN (
+				SELECT DISTINCT rf.FUN_ID
+				FROM tbs_pl_role_fun rf
+				LEFT JOIN tbs_pl_user_role ur ON rf.ROLE_ID = ur.ROLE_ID 
+				LEFT JOIN tbs_pl_role_info ri ON rf.ROLE_ID = ri.ROLE_ID 
+				WHERE ur.USER_ID = #{userId,jdbcType=CHAR} AND ri.APP_ID = #{appId,jdbcType=CHAR}
+			) funVi ON mf.FUN_ID = funVi.FUN_ID
+		) am 
+		JOIN tbs_pl_app_menu parent ON am.PARENT_ID = parent.MENU_ID
+	) result 
+	WHERE result.MENU_ID IS NOT NULL AND result.APP_ID = #{appId,jdbcType=CHAR}
+	ORDER BY result.MENU_TYPE DESC,result.PARENT_ID, result.SHOW_ORDER
+  </select>
+  
+  <delete id="delFunsByMenuId" parameterType="java.lang.String" >
+    delete from tbs_pl_menu_fun
+    where MENU_ID = #{menuId,jdbcType=CHAR}
+  </delete>
+  
+  <select id="queryFuns2User" resultMap="MenuFunVo" parameterType="java.lang.String">
+  	SELECT DISTINCT mf.MENU_ID, fi.FUN_ID, fi.MODEL_ID, fi.FUN_NAME, fi.FUN_CODE, fi.EXECUTE_METHOD, fi.PARAM, fi.KEY_CODE, fi.REQUEST_URL, fi.REQUEST_TYPE, fi.IS_VALID_LOGIN, fi.EXTEND1, fi.EXTEND2, fi.REMARK 
+	FROM tbs_pl_role_fun rf
+	LEFT JOIN tbs_pl_user_role ur ON rf.ROLE_ID = ur.ROLE_ID 
+	LEFT JOIN tbs_pl_role_info ri ON rf.ROLE_ID = ri.ROLE_ID 
+	LEFT JOIN tbs_pl_fun_info fi ON rf.FUN_ID = fi.FUN_ID
+	LEFT JOIN tbs_pl_menu_fun mf ON mf.FUN_ID = fi.FUN_ID
+	WHERE mf.MENU_ID IS NOT NULL AND ur.USER_ID = #{userId,jdbcType=CHAR} AND ri.APP_ID = #{appId,jdbcType=CHAR}
+	ORDER BY mf.MENU_ID, fi.FUN_NAME DESC
+  </select>
+</mapper>

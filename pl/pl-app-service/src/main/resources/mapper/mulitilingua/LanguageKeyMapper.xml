@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.multilingual.dao.LanguageKeyMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.multilingual.entity.LanguageKey" >
+    <id column="LANG_KEY_ID" property="langKeyId" jdbcType="CHAR" />
+    <result column="KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+    <result column="GP_CODE" property="gpCode" jdbcType="VARCHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="KEY_TYPE" property="keyType" jdbcType="VARCHAR" />
+    <result column="DEFAULT_VALUE" property="defaultValue" jdbcType="VARCHAR" />
+    <result column="KEY_DESC" property="keyDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="LanguageKeyVo" type="com.robustel.pl.app.multilingual.vo.LanguageKeyVo" >
+    <id column="LANG_KEY_ID" property="langKeyId" jdbcType="CHAR" />
+    <result column="KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+    <result column="GP_CODE" property="gpCode" jdbcType="VARCHAR" />
+    <result column="GP_NAME" property="gpName" jdbcType="VARCHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="KEY_TYPE" property="keyType" jdbcType="VARCHAR" />
+    <result column="DEFAULT_VALUE" property="defaultValue" jdbcType="VARCHAR" />
+    <result column="KEY_DESC" property="keyDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    LANG_KEY_ID, KEY_CODE, GP_CODE, APP_ID, KEY_TYPE, DEFAULT_VALUE, KEY_DESC
+  </sql>
+
+  <select id="queryKeys" resultType="java.util.Map" parameterType="com.robustel.pl.app.multilingual.entity.LanguageKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_language_key
+    where 1 = 1
+    <if test="keyCode != null" >
+      and KEY_CODE like concat('%', #{keyCode,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="appId != null" >
+      and APP_ID = #{appId,jdbcType=CHAR}
+    </if>
+    <if test="keyType != null" >
+      and KEY_TYPE = #{keyType,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <select id="queryKeysByAppId" resultMap="LanguageKeyVo" parameterType="java.util.Map" >
+	SELECT DISTINCT lk.LANG_KEY_ID, lk.KEY_CODE, lk.GP_CODE, lk.APP_ID, lk.KEY_TYPE, lk.DEFAULT_VALUE, lk.KEY_DESC, dic.NAME AS GP_NAME
+	FROM tbs_pl_language_key lk
+	LEFT JOIN (
+		SELECT dict.NAME, dict.CODE
+		FROM tbs_pl_dictionary dict
+		LEFT JOIN tbs_pl_dictionary_group dg ON dg.APP_ID = #{appId,jdbcType=CHAR} AND dg.DIC_GP_ID = dict.DIC_GP_ID
+	) dic ON lk.GP_CODE = dic.CODE
+    where lk.APP_ID = #{appId,jdbcType=CHAR}
+    <if test="keyword != null">
+      and (
+      	lk.KEY_CODE like concat('%', #{keyword,jdbcType=VARCHAR}, '%') 
+      	or lk.DEFAULT_VALUE like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+      	or lk.KEY_DESC like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+      	or lk.GP_CODE like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+      )
+    </if>
+  </select>
+  
+  <select id="queryKeyByAppIdAndKeyCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_language_key
+    where APP_ID = #{appId,jdbcType=CHAR} and KEY_CODE = #{keyCode,jdbcType=VARCHAR} limit 0,1
+  </select>
+  
+  <select id="judgeUpdateWhetherExists" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_language_key
+    where LANG_KEY_ID != #{langKeyId,jdbcType=CHAR} and APP_ID = #{appId,jdbcType=CHAR} and KEY_CODE = #{keyCode,jdbcType=VARCHAR} limit 0,1
+  </select>
+  
+  <select id="getLanguageValue" resultType="java.lang.String" parameterType="java.lang.String" >
+    SELECT md.SHOW_VALUE
+	FROM tbs_pl_multilingual_data md
+	WHERE md.MU_ID = #{muId,jdbcType=CHAR} AND md.LANG_KEY_ID = #{langKeyId,jdbcType=CHAR} limit 0,1
+  </select>
+  
+  <select id="queryKeyValues" resultType="java.util.Map" parameterType="java.util.Map" >
+  	<![CDATA[
+	  	SELECT re.keyCode, (CASE LENGTH(MAX(re.showValue)) < 1 WHEN 1 THEN re.defaultValue ELSE MAX(re.showValue) END) AS showValue
+  	]]>
+		FROM (
+			SELECT lk.KEY_CODE AS keyCode, lk.DEFAULT_VALUE AS defaultValue, '' AS showValue
+			FROM tbs_pl_language_key lk
+			WHERE lk.APP_ID = #{appId,jdbcType=CHAR}
+			<if test="gpCodes != null">
+				 AND lk.GP_CODE IN 
+				<foreach collection="gpCodes" item="item" open="(" separator="," close=")">    
+					#{item}
+			    </foreach>
+			</if>
+			UNION 
+			SELECT lk.KEY_CODE AS keyCode, lk.DEFAULT_VALUE AS defaultValue, md.SHOW_VALUE AS showValue
+			FROM tbs_pl_language_key lk
+			JOIN tbs_pl_multilingual_data md ON lk.LANG_KEY_ID = md.LANG_KEY_ID
+			WHERE lk.APP_ID = #{appId,jdbcType=CHAR} AND md.MU_ID = #{muId,jdbcType=CHAR}
+			<if test="gpCodes != null">
+				 AND lk.GP_CODE IN 
+				<foreach collection="gpCodes" item="item" open="(" separator="," close=")">    
+					#{item}
+			    </foreach>
+			</if>
+		) re
+		GROUP BY re.keyCode
+  </select>
+</mapper>

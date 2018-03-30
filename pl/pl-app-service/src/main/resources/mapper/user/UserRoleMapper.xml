@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.user.dao.UserRoleMapper" >
+
+	<resultMap id="BaseResultMap" type="com.robustel.pl.app.user.entity.UserRole" >
+		<id column="USER_ROLE_ID" property="userRoleId" jdbcType="CHAR" />
+		<result column="USER_ID" property="userId" jdbcType="CHAR" />
+		<result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+		<result column="OPERATE_TIME" property="operateTime" jdbcType="BIGINT" />
+		<result column="OPERATER_ID" property="operaterId" jdbcType="CHAR" />
+		<result column="OPERATER_USER" property="operaterName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="UserRoleVo" type="com.robustel.pl.app.user.vo.UserRoleVo" >
+		<id column="USER_ROLE_ID" property="userRoleId" jdbcType="CHAR" />
+		<result column="USER_ID" property="userId" jdbcType="CHAR" />
+		<result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+		<result column="OPERATE_TIME" property="operateTime" jdbcType="BIGINT" />
+		<result column="OPERATER_ID" property="operaterId" jdbcType="CHAR" />
+		<result column="OPERATER_USER" property="operaterName" jdbcType="VARCHAR" />
+		<result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+		<result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+		<result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+	    <result column="ROLE_NAME_KEY_CODE" property="roleNameKeyCode" jdbcType="VARCHAR" />
+	    <result column="ROLE_DESC" property="roleDesc" jdbcType="VARCHAR" />
+	    <result column="ROLE_DESC_KEY_CODE" property="roleDescKeyCode" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+		USER_ROLE_ID, USER_ID, ROLE_ID, OPERATE_TIME, OPERATER_ID, OPERATER_USER
+	</sql>
+
+	<select id="queryList" parameterType="java.lang.String" resultMap="UserRoleVo">
+		SELECT role.*, ur.USER_ROLE_ID
+		FROM tbs_pl_user_role ur 
+		LEFT JOIN (
+			SELECT DISTINCT pa.APP_ID, pa.APP_NAME, ri.ROLE_ID, ri.ROLE_NAME, ri.ROLE_NAME_KEY_CODE, ri.ROLE_DESC, ri.ROLE_DESC_KEY_CODE
+			FROM tbs_pl_role_info ri
+			LEFT JOIN tbs_pl_app pa ON pa.APP_ID = ri.APP_ID
+			WHERE ri.APP_ID = #{appId,jdbcType=CHAR}
+		) role ON ur.ROLE_ID = role.ROLE_ID
+		WHERE ur.USER_ID = #{userId,jdbcType=CHAR} and role.APP_ID is not null
+	</select>
+	
+	<select id="queryNoDistributedRolesInApp" parameterType="java.lang.String" resultMap="UserRoleVo">
+		SELECT DISTINCT ri.*
+		FROM tbs_pl_role_info ri
+		WHERE ri.APP_ID = #{appId,jdbcType=CHAR} and ri.SCOPE_TYPE = '0'
+			<if test="createrId != null" >
+	        	  and ri.CREATER_ID = #{createrId,jdbcType=VARCHAR}
+	      	</if>
+			AND ri.ROLE_ID NOT IN (
+				SELECT ur.ROLE_ID
+				FROM tbs_pl_user_role ur 
+				WHERE ur.USER_ID = #{userId,jdbcType=CHAR}
+			)
+	</select>
+	
+	<select id="queryNoDistributedRolesInRootGroup" parameterType="java.lang.String" resultMap="UserRoleVo">
+		SELECT DISTINCT ri.*
+		FROM tbs_pl_role_info ri
+		WHERE ri.BELONG_ORG_ID = #{rootGroupId,jdbcType=CHAR} AND ri.ROLE_ID NOT IN (
+			SELECT ur.ROLE_ID
+			FROM tbs_pl_user_role ur 
+			WHERE ur.USER_ID = #{userId,jdbcType=CHAR}
+		)
+	</select>
+	
+	<select id="queryDistributedRoles2Business" parameterType="java.lang.String" resultMap="UserRoleVo">
+		SELECT role.*, ur.USER_ROLE_ID
+		FROM tbs_pl_user_role ur 
+		LEFT JOIN (
+			SELECT DISTINCT pa.APP_ID, pa.APP_NAME, ri.ROLE_ID, ri.ROLE_NAME, ri.ROLE_NAME_KEY_CODE, ri.ROLE_DESC, ri.ROLE_DESC_KEY_CODE
+			FROM tbs_pl_role_info ri
+			LEFT JOIN tbs_pl_app pa ON pa.APP_ID = ri.APP_ID
+			WHERE ri.APP_ID = #{appId,jdbcType=CHAR} and ri.SCOPE_TYPE = '0'
+			<if test="createrId != null" >
+	        	 and ri.CREATER_ID = #{createrId,jdbcType=VARCHAR}
+	      	</if>
+			
+		) role ON ur.ROLE_ID = role.ROLE_ID
+		WHERE ur.USER_ID = #{userId,jdbcType=CHAR} and role.APP_ID is not null
+		<if test="keyword != null" >
+        	AND role.ROLE_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+      </if>
+	</select>
+	
+	<select id="queryNoDistributedRoles2Business" parameterType="java.lang.String" resultMap="UserRoleVo">
+		SELECT DISTINCT ri.*
+		FROM tbs_pl_role_info ri
+		WHERE ri.APP_ID = #{appId,jdbcType=CHAR} and ri.SCOPE_TYPE = '0'
+		<if test="createrId != null" >
+        	 and ri.CREATER_ID = #{createrId,jdbcType=VARCHAR}
+      	</if>
+		AND ri.ROLE_ID NOT IN (
+			SELECT ur.ROLE_ID
+			FROM tbs_pl_user_role ur 
+			WHERE ur.USER_ID = #{userId,jdbcType=CHAR}
+		)
+	</select>
+	
+	<select id="queryNoDistributedRoles2BusinessAndApps" parameterType="java.lang.String" resultMap="UserRoleVo">
+		SELECT DISTINCT ri.*, pa.APP_NAME
+		FROM tbs_pl_role_info ri
+		LEFT JOIN tbs_pl_app pa ON pa.APP_ID = ri.APP_ID
+		WHERE ri.SCOPE_TYPE = '0'
+		<if test="createrId != null" >
+        	 and ri.CREATER_ID = #{createrId,jdbcType=VARCHAR}
+      	</if>
+		AND ri.ROLE_ID NOT IN (
+			SELECT ur.ROLE_ID
+			FROM tbs_pl_user_role ur 
+			WHERE ur.USER_ID = #{userId,jdbcType=CHAR}
+		) 
+		AND ri.APP_ID in
+	    <foreach collection="appIds" index="index" item="appId" open="(" separator="," close=")">
+	        #{appId}
+	    </foreach>
+	</select>
+	
+	<delete id="deleteByUserId" parameterType="java.lang.String">
+		DELETE FROM tbs_pl_user_role WHERE USER_ID = #{userId,jdbcType=CHAR}
+	</delete>
+</mapper>

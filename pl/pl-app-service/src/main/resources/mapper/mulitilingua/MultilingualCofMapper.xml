@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.multilingual.dao.MultilingualCofMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.multilingual.entity.MultilingualCof" >
+    <id column="MU_ID" property="muId" jdbcType="CHAR" />
+    <result column="CODE" property="code" jdbcType="VARCHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="MULTILINGUAL_NAME" property="multilingualName" jdbcType="VARCHAR" />
+    <result column="LANG_DESC" property="langDesc" jdbcType="VARCHAR" />
+    <result column="USE_CONDITION" property="useCondition" jdbcType="VARCHAR" />
+    <result column="IS_DEFAULT" property="isDefault" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MU_ID, CODE, APP_ID, MULTILINGUAL_NAME, LANG_DESC, USE_CONDITION,IS_DEFAULT
+  </sql>
+
+  <update id="cancelDefault" parameterType="java.lang.String" >
+    update tbs_pl_multilingual_cof
+    set IS_DEFAULT = 0
+    where APP_ID = #{appId,jdbcType=CHAR}
+  </update>
+  
+  <select id="queryCofList" resultType="java.util.Map" parameterType="com.robustel.pl.app.multilingual.entity.MultilingualCof" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_multilingual_cof
+    where 1 = 1
+    <if test="code != null" >
+      and CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="appId != null" >
+      and APP_ID = #{appId,jdbcType=CHAR}
+    </if>
+    <if test="multilingualName != null" >
+      and MULTILINGUAL_NAME like concat('%', #{multilingualName,jdbcType=VARCHAR}, '%')
+    </if>
+  </select>
+  
+  <select id="queryCofs2App" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_multilingual_cof
+    where APP_ID = #{appId,jdbcType=CHAR}
+  </select>
+  
+  <select id="queryCofByCodeOrMultiName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_multilingual_cof
+    where APP_ID = #{appId,jdbcType=CHAR} and ( 1 != 1
+    <if test="multilingualName != null" >
+      OR MULTILINGUAL_NAME = #{multilingualName,jdbcType=VARCHAR}
+    </if>
+    <if test="code != null" >
+      OR CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    )
+    limit 0,1
+  </select>
+  
+  <select id="judgeUpdateWhetherExists" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_multilingual_cof
+    where APP_ID = #{appId,jdbcType=CHAR} and MU_ID != #{muId,jdbcType=CHAR} and ( 1 != 1
+    <if test="multilingualName != null" >
+      OR MULTILINGUAL_NAME = #{multilingualName,jdbcType=VARCHAR}
+    </if>
+    <if test="code != null" >
+      OR CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    )
+    limit 0,1
+  </select>
+</mapper>

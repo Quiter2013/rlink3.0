@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.group.dao.GroupMemberMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.group.entity.GroupMember" >
+    <id column="MEMBER_ID" property="memberId" jdbcType="CHAR" />
+    <result column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="NICKE_NAME" property="nickeName" jdbcType="VARCHAR" />
+    <result column="JOIN_TIME" property="joinTime" jdbcType="BIGINT" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="INVITER_ID" property="inviterId" jdbcType="CHAR" />
+    <result column="INVITER_NAME" property="inviterName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="GroupMemberVo" type="com.robustel.pl.app.group.vo.GroupMemberVo" >
+    <id column="MEMBER_ID" property="memberId" jdbcType="CHAR" />
+    <result column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="CHAR" />
+    <result column="EMAIL" property="email" jdbcType="CHAR" />
+    <result column="NICKE_NAME" property="nickeName" jdbcType="VARCHAR" />
+    <result column="JOIN_TIME" property="joinTime" jdbcType="BIGINT" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="INVITER_NAME" property="inviterName" jdbcType="VARCHAR" />
+    <result column="SUPER_ADMIN_ID" property="superAdminId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="PlUserResultMap" type="com.robustel.pl.app.user.vo.PlUserVo" >
+    <id column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
+    <result column="EMAIL" property="email" jdbcType="CHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER" property="creater" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+    <result column="IS_DEFAULT" property="isDefault" jdbcType="CHAR" />
+    <result column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="SimpleGroupResult" type="com.robustel.pl.app.group.vo.ResponseGroupInfoVo" >
+    <id column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="GROUP_CODE" property="groupCode" jdbcType="VARCHAR" />
+    <result column="GROUP_SHORT_NAME" property="groupShortName" jdbcType="VARCHAR" />
+    <result column="GROUP_TYPE" property="groupType" jdbcType="VARCHAR" />
+    <result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+    <result column="PARENT_GROUP_ID" property="parentGroupId" jdbcType="CHAR" />
+    <result column="ROOT_GROUP_ID" property="rootGroupId" jdbcType="CHAR" />
+    <result column="SHOW_ORDER" property="showOrder" jdbcType="INTEGER" />
+    <result column="GP_DESC" property="gpDesc" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    MEMBER_ID, GROUP_ID, USER_ID, NICKE_NAME, JOIN_TIME, STATE, INVITER_ID, INVITER_NAME
+  </sql>
+
+  <delete id="deleteByKeys" parameterType="java.lang.String" >
+    delete from tbs_pl_group_member
+    where MEMBER_ID in 
+    <foreach item="item" index="index" collection="keys" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </delete>
+  
+  <delete id="deleteByGroupId" parameterType="java.lang.String" >
+    delete from tbs_pl_group_member
+    where GROUP_ID = #{groupId,jdbcType=CHAR}
+  </delete>
+
+  <select id="queryUsersInGroup" resultMap="GroupMemberVo" parameterType="java.lang.String" >
+		SELECT gm.MEMBER_ID, bi.LOGIN_ACCOUNT, bi.EMAIL, gm.NICKE_NAME, gm.JOIN_TIME, gm.STATE, gm.INVITER_NAME, bi.USER_ID
+		FROM tbs_pl_group_member gm
+		LEFT JOIN tbs_pl_user_base_info bi ON gm.USER_ID = bi.USER_ID
+		WHERE gm.GROUP_ID = #{groupId,jdbcType=CHAR}
+		<if test="keyword != null">
+			and ( 1 != 1 
+				or bi.LOGIN_ACCOUNT like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+				or bi.EMAIL like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+				or gm.NICKE_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+			)
+		</if>
+  </select>
+  
+  <select id="queryUsersNotInGroup" resultMap="PlUserResultMap" parameterType="java.lang.String" >
+    	SELECT bi.USER_ID, bi.USER_NAME, bi.LOGIN_ACCOUNT, bi.EMAIL
+		FROM tbs_pl_user_base_info bi
+		WHERE bi.USER_ID NOT IN (
+			SELECT gm.USER_ID
+			FROM tbs_pl_group_member gm
+			WHERE GROUP_ID = #{groupId,jdbcType=CHAR}
+		) AND bi.USER_ID IN (
+			SELECT ua.USER_ID
+			FROM tbs_pl_user_app ua
+			WHERE ua.APP_ID = #{appId,jdbcType=CHAR}
+		)
+		ORDER BY bi.CREATE_TIME DESC
+  </select>
+  
+  <select id="queryUsersInRootGroupNotInGroup" resultMap="PlUserResultMap" parameterType="java.lang.String" >
+    	SELECT bi.USER_ID, bi.USER_NAME, bi.LOGIN_ACCOUNT, bi.EMAIL
+		FROM tbs_pl_user_base_info bi
+		WHERE bi.USER_ID NOT IN (
+			SELECT gm.USER_ID
+			FROM tbs_pl_group_member gm
+			WHERE GROUP_ID = #{groupId,jdbcType=CHAR}
+		) AND bi.USER_ID IN (
+			SELECT ua.USER_ID
+			FROM tbs_pl_user_app ua
+			WHERE ua.APP_ID = #{appId,jdbcType=CHAR}
+		) AND bi.USER_ID IN (
+			SELECT rootG.USER_ID
+			FROM tbs_pl_group_member rootG
+			WHERE rootG.GROUP_ID = #{rootGroupId,jdbcType=CHAR}
+		)
+		ORDER BY bi.CREATE_TIME DESC
+  </select>
+  
+  <select id="queryRootGroupByUserAndAppId" resultMap="SimpleGroupResult" parameterType="java.util.Map" >
+		SELECT DISTINCT gi.GROUP_NAME, gi.GROUP_ID 
+		FROM tbs_pl_group_member gm
+		LEFT JOIN tbs_pl_group_info gi ON gm.GROUP_ID = gi.GROUP_ID AND (gi.ROOT_GROUP_ID IS NULL OR TRIM(gi.ROOT_GROUP_ID) = '')
+		WHERE gm.USER_ID = #{userId,jdbcType=CHAR} AND gi.APP_ID = #{appId,jdbcType=CHAR} AND gm.STATE = 2
+  </select>
+  
+  <select id="queryGroupVo2User" resultMap="SimpleGroupResult" parameterType="java.lang.String" >
+    SELECT gi.GROUP_ID, gi.APP_ID, gi.GROUP_NAME, gi.GROUP_CODE, gi.GROUP_SHORT_NAME, gi.GROUP_TYPE, gi.BIZ_TYPE, gi.PARENT_GROUP_ID, gi.ROOT_GROUP_ID, gi.SHOW_ORDER, gi.GP_DESC, gi.STATE
+	FROM tbs_pl_group_member gm 
+	LEFT JOIN tbs_pl_group_info gi ON gi.GROUP_ID = gm.GROUP_ID
+	WHERE gi.GROUP_ID is not null and gm.USER_ID = #{userId,jdbcType=CHAR}
+  </select>
+  
+  <select id="queryMembersByGroupId" resultMap="PlUserResultMap" parameterType="java.lang.String" >
+    	SELECT bi.USER_ID, bi.USER_NAME, bi.LOGIN_ACCOUNT, bi.EMAIL,gm.GROUP_ID
+		FROM tbs_pl_group_member gm
+		LEFT JOIN tbs_pl_user_base_info bi ON gm.USER_ID = bi.USER_ID
+		WHERE gm.GROUP_ID = #{groupId,jdbcType=CHAR}
+		ORDER BY bi.CREATE_TIME DESC
+  </select>
+  
+  <select id="selectByGroupIdAndUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_group_member
+    where GROUP_ID = #{groupId,jdbcType=CHAR} and USER_ID = #{userId,jdbcType=CHAR}
+  </select>
+  
+  <select id="queryGroups2User" resultMap="GroupMemberVo" parameterType="java.lang.String" >
+	SELECT DISTINCT re.MEMBER_ID, re.USER_ID, re.GROUP_ID, re.NICKE_NAME, re.JOIN_TIME, re.STATE, re.INVITER_NAME, re.SUPER_ADMIN_ID
+	FROM (
+		SELECT gm.MEMBER_ID, gm.USER_ID, gm.GROUP_ID, gm.NICKE_NAME, gm.JOIN_TIME, gm.STATE, gm.INVITER_NAME, gi.SUPER_ADMIN_ID
+		FROM tbs_pl_group_info gi
+		LEFT JOIN tbs_pl_group_member gm ON gi.GROUP_ID = gm.GROUP_ID
+		WHERE gi.ROOT_GROUP_ID = #{rootGroupId,jdbcType=CHAR} AND gm.USER_ID = #{userId,jdbcType=CHAR}
+		UNION 
+		SELECT gm.MEMBER_ID, gm.USER_ID, gm.GROUP_ID, gm.NICKE_NAME, gm.JOIN_TIME, gm.STATE, gm.INVITER_NAME, gi.SUPER_ADMIN_ID
+		FROM tbs_pl_group_info gi
+		LEFT JOIN tbs_pl_group_member gm ON gi.GROUP_ID = gm.GROUP_ID
+		WHERE gi.GROUP_ID = #{rootGroupId,jdbcType=CHAR} AND gm.USER_ID = #{userId,jdbcType=CHAR}
+	) re
+  </select>
+  
+  <delete id="deleteByUserId" parameterType="java.lang.String" >
+    delete from tbs_pl_group_member
+    where USER_ID = #{userId,jdbcType=CHAR}
+  </delete>
+  
+  <select id="queryRootGroupsByUserId" resultMap="SimpleGroupResult" parameterType="java.lang.String" >
+		SELECT DISTINCT gi.GROUP_NAME, gi.GROUP_ID, gi.APP_ID
+		FROM tbs_pl_group_member gm
+		LEFT JOIN tbs_pl_group_info gi ON gm.GROUP_ID = gi.GROUP_ID AND (gi.ROOT_GROUP_ID IS NULL OR TRIM(gi.ROOT_GROUP_ID) = '')
+		WHERE gm.USER_ID = #{userId,jdbcType=CHAR}
+  </select>
+</mapper>

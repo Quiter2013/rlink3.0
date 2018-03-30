@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.role.dao.GroupMemberRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.role.entity.GroupMemberRole" >
+    <id column="MEMBER_ROLE_ID" property="memberRoleId" jdbcType="CHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+    <result column="MEMBER_ID" property="memberId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+    <result column="CREATER_NAME" property="createrName" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="BIGINT" />
+    <result column="UPDATER" property="updater" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MEMBER_ROLE_ID, ROLE_ID, MEMBER_ID, CREATE_TIME, CREATER_ID, CREATER_NAME, UPDATE_TIME, 
+    UPDATER
+  </sql>
+
+  <select id="getMembersByRoleId" resultType="java.util.Map" parameterType="java.lang.String" >
+    SELECT ui.USER_ID,ui.USER_NAME,ui.LOGIN_ACCOUNT,ui.LOGIN_PWD,ui.STATE,ui.CREATE_TIME,ui.CREATER 
+	FROM tbs_pl_group_member_role gmr
+	LEFT JOIN tbs_pl_group_member gm ON gm.MEMBER_ID = gmr.MEMBER_ID
+	LEFT JOIN tbs_pl_user_base_info ui ON gm.USER_ID = ui.USER_ID
+	WHERE gmr.ROLE_ID = #{roleId,jdbcType=CHAR}
+	<if test="userName != null">
+		AND ui.USER_NAME LIKE CONCAT('%', #{userName,jdbcType=VARCHAR}, '%')
+	</if>
+  </select>
+</mapper>

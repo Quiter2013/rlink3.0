@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.role.dao.RoleMenuMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.role.entity.RoleMenu" >
+    <result column="ROLE_MENU_ID" property="roleMenuId" jdbcType="CHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+    <result column="MENU_ID" property="menuId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+    <result column="CREATER_NAME" property="createrName" jdbcType="VARCHAR" />
+    <result column="UPDATER_ID" property="updaterId" jdbcType="CHAR" />
+    <result column="UPDATER_NAME" property="updaterName" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ROLE_MENU_ID, ROLE_ID, MENU_ID, CREATE_TIME, CREATER_ID, CREATER_NAME, 
+    UPDATER_ID, UPDATER_NAME, UPDATE_TIME 
+  </sql>
+
+  <select id="getMenuListByUserIdAndRootGroupId" resultType="java.util.Map" parameterType="java.lang.String" >
+    SELECT DISTINCT rmenu.MENU_ID,rmenu.APP_ID,rmenu.MENU_NAME,rmenu.MENU_CODE,rmenu.MENU_TYPE,rmenu.MENU_DESC,
+		rmenu.LOAD_RES,rmenu.LOAD_PARAM,rmenu.SHOW_WAY,rmenu.SHOW_ORDER,rmenu.PARENT_ID,
+		rmenu.OPEN_CLOSE_STATE,rmenu.EXPAND_ICON,rmenu.FOLD_ICON 
+	FROM (
+		SELECT menu.MENU_ID,menu.APP_ID,menu.MENU_NAME,menu.MENU_CODE,menu.MENU_TYPE,menu.MENU_DESC,
+			menu.LOAD_RES,menu.LOAD_PARAM,menu.SHOW_WAY,menu.SHOW_ORDER,menu.PARENT_ID,
+			menu.OPEN_CLOSE_STATE,menu.EXPAND_ICON,menu.FOLD_ICON 
+		FROM (
+			SELECT DISTINCT gr.ROLE_ID
+			FROM (
+				SELECT gm.GROUP_ID
+				FROM tbs_pl_group_member gm
+				LEFT JOIN tbs_pl_group_info gi ON gm.GROUP_ID = gi.GROUP_ID
+				WHERE (gm.USER_ID = #{userId,jdbcType=CHAR} AND gi.ROOT_GROUP_ID = #{rootGroupId,jdbcType=CHAR}) 
+					OR gi.GROUP_ID = #{rootGroupId,jdbcType=CHAR}
+			) gp
+			LEFT JOIN tbs_pl_group_role gr ON gp.GROUP_ID = gr.GROUP_ID
+		) role
+		LEFT JOIN tbs_pl_role_menu rm ON role.ROLE_ID = rm.ROLE_ID
+		LEFT JOIN tbs_pl_app_menu menu ON rm.MENU_ID = menu.MENU_ID
+		WHERE menu.MENU_ID IS NOT NULL
+		UNION ALL
+		SELECT menu.MENU_ID,menu.APP_ID,menu.MENU_NAME,menu.MENU_CODE,menu.MENU_TYPE,menu.MENU_DESC,
+			menu.LOAD_RES,menu.LOAD_PARAM,menu.SHOW_WAY,menu.SHOW_ORDER,menu.PARENT_ID,
+			menu.OPEN_CLOSE_STATE,menu.EXPAND_ICON,menu.FOLD_ICON 
+		FROM tbs_pl_user_role ur
+		LEFT JOIN tbs_pl_role_menu rm ON ur.ROLE_ID = rm.ROLE_ID
+		LEFT JOIN tbs_pl_app_menu menu ON rm.MENU_ID = menu.MENU_ID
+		LEFT JOIN tbs_pl_role_info ri ON ur.ROLE_ID = ri.ROLE_ID
+		LEFT JOIN tbs_pl_group_info gi ON ri.APP_ID = gi.APP_ID
+		WHERE gi.GROUP_ID = #{rootGroupId,jdbcType=CHAR} AND ur.USER_ID = #{userId,jdbcType=CHAR}
+	) rmenu
+	order by rmenu.SHOW_ORDER
+  </select>
+  
+  <select id="getMenusByRoleId" resultType="java.util.Map" parameterType="java.lang.String" >
+  	SELECT DISTINCT menu.MENU_ID,menu.APP_ID,menu.MENU_NAME,menu.MENU_CODE,menu.MENU_TYPE,menu.MENU_DESC,
+			menu.LOAD_RES,menu.LOAD_PARAM,menu.SHOW_WAY,menu.SHOW_ORDER,menu.PARENT_ID,
+			menu.OPEN_CLOSE_STATE,menu.EXPAND_ICON,menu.FOLD_ICON 
+	FROM tbs_pl_role_menu rm
+	LEFT JOIN tbs_pl_app_menu menu ON rm.MENU_ID = rm.MENU_ID
+	where rm.ROLE_ID = #{roleId,jdbcType=CHAR}
+	<if test="menuName != null">
+		and menu.MENU_NAME like concat('%', #{roleId,jdbcType=CHAR}, '%')
+	</if>
+  </select>
+</mapper>

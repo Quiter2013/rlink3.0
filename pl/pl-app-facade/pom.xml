@@ -24,12 +24,12 @@
         <dependency>
             <groupId>com.robustel</groupId>
             <artifactId>common-web</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.robustel</groupId>
             <artifactId>common-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.user.dao.UserAppMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.user.entity.UserApp" >
+    <id column="PID" property="pid" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="IS_DEFAULT" property="isDefault" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="AppUserVo" type="com.robustel.pl.app.management.vo.AppUserVo" >
+    <id column="PID" property="pid" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+    <result column="APP_CODE" property="appCode" jdbcType="VARCHAR" />
+    <result column="IS_ONLINE" property="isOnline" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="IS_DEFAULT" property="isDefault" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    PID, APP_ID, USER_ID, IS_DEFAULT, CREATE_TIME, CREATER
+  </sql>
+
+  <select id="apps2User" resultMap="AppUserVo" parameterType="java.lang.String" >
+    SELECT ua.PID,pa.APP_ID,pa.APP_NAME,pa.APP_CODE,pa.IS_ONLINE,ua.USER_ID,ua.IS_DEFAULT
+	FROM tbs_pl_user_app ua
+	LEFT JOIN tbs_pl_app pa ON ua.APP_ID = pa.APP_ID
+	WHERE ua.USER_ID = #{userId,jdbcType=CHAR}
+	ORDER BY ua.CREATE_TIME
+  </select>
+  
+  <select id="queryByUserIdAndAppId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_user_app
+    where USER_ID = #{userId,jdbcType=CHAR} and APP_ID = #{appId,jdbcType=CHAR}
+  </select>
+  
+  <select id="queryDefaultAppByUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_user_app
+    where IS_DEFAULT = 1 and USER_ID = #{userId,jdbcType=CHAR}
+    <if test="pid != null">
+    	and PID != #{pid,jdbcType=CHAR}
+    </if>
+  </select>
+  
+  <update id="updateIsDefaultByUserId" parameterType="java.lang.String" >
+    update tbs_pl_user_app
+    set IS_DEFAULT = 0
+    where USER_ID = #{userId,jdbcType=CHAR}
+  </update>
+  
+  <delete id="deleteByUserId" parameterType="java.lang.String" >
+    delete from tbs_pl_user_app
+    where USER_ID = #{userId,jdbcType=CHAR}
+  </delete>
+</mapper>

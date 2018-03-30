@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.role.dao.RoleFunMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.role.entity.RoleFun" >
+    <id column="RF_ID" property="rfId" jdbcType="CHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+    <result column="FUN_ID" property="funId" jdbcType="CHAR" />
+    <result column="DATA_PRIVILEGE_ID" property="dataPrivilegeId" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="BIGINT" />
+    <result column="UPDATER" property="updater" jdbcType="CHAR" />
+  </resultMap>
+  
+  <resultMap id="RoleFunVo" type="com.robustel.pl.app.role.vo.RoleFunVo" >
+    <id column="RF_ID" property="rfId" jdbcType="CHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="FUN_ID" property="funId" jdbcType="CHAR" />
+    <result column="FUN_NAME" property="funName" jdbcType="VARCHAR" />
+    <result column="DATA_PRIVILEGE_ID" property="dataPrivilegeId" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="BIGINT" />
+    <result column="UPDATER" property="updater" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    RF_ID, ROLE_ID, FUN_ID, DATA_PRIVILEGE_ID, CREATE_TIME, CREATER_ID, CREATER, UPDATE_TIME, 
+    UPDATER
+  </sql>
+
+  <select id="getFunsByRoleId" resultMap="RoleFunVo" parameterType="java.lang.String">
+  	SELECT rf.RF_ID, fi.FUN_ID, ri.ROLE_ID, ri.ROLE_NAME, fi.MODEL_ID, fi.FUN_NAME, fi.FUN_CODE, fi.EXECUTE_METHOD, 
+  		fi.PARAM, fi.KEY_CODE, fi.EXTEND1, fi.EXTEND2, fi.REMARK
+	FROM tbs_pl_role_fun rf
+	LEFT JOIN tbs_pl_fun_info fi ON rf.FUN_ID = fi.FUN_ID
+	LEFT JOIN tbs_pl_role_info ri on rf.ROLE_ID = ri.ROLE_ID
+	WHERE rf.ROLE_ID = #{roleId,jdbcType=CHAR}
+	<if test="funName != null" >
+      and fi.FUN_NAME like concat('%', #{funName,jdbcType=VARCHAR}, '%') 
+    </if>
+  </select>
+  
+  <select id="getFunsByRoleIdAndMenuId" resultType="java.util.Map" parameterType="java.lang.String">
+  	SELECT fi.FUN_ID, fi.MODEL_ID, fi.FUN_NAME, fi.FUN_CODE, fi.EXECUTE_METHOD, 
+  		fi.PARAM, fi.KEY_CODE, fi.EXTEND1, fi.EXTEND2, fi.REMARK
+	FROM tbs_pl_role_fun rf
+	LEFT JOIN tbs_pl_fun_info fi ON rf.FUN_ID = fi.FUN_ID
+	LEFT JOIN PL_MENU_FUN mf ON mf.FUN_ID = rf.FUN_ID
+	WHERE rf.ROLE_ID = #{roleId,jdbcType=CHAR} AND mf.MENU_ID = #{menuId,jdbcType=CHAR}
+  </select>
+  
+  <!-- 批量插入 -->
+  <insert id="batchInsert" useGeneratedKeys="true" parameterType="java.util.List">
+	   	insert into tbs_pl_role_fun (RF_ID, ROLE_ID, FUN_ID, DATA_PRIVILEGE_ID, 
+	     		CREATE_TIME, CREATER_ID, CREATER, UPDATE_TIME, UPDATER) values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.rfId,jdbcType=CHAR}, #{item.roleId,jdbcType=CHAR}, #{item.funId,jdbcType=CHAR}, 
+				#{item.dataPrivilegeId,jdbcType=VARCHAR}, #{item.createTime,jdbcType=BIGINT}, 
+				#{item.createrId,jdbcType=CHAR}, #{item.creater,jdbcType=VARCHAR}, 
+	     		#{item.updateTime,jdbcType=BIGINT}, #{item.updater,jdbcType=CHAR})
+		</foreach>
+  </insert>
+  
+  <delete id="delFunListByRoleId" parameterType="java.lang.String" >
+    delete from tbs_pl_role_fun
+    where ROLE_ID = #{roleId,jdbcType=CHAR}
+  </delete>
+  
+  <delete id="batchDelByPrimarykeys" parameterType="java.lang.String" >
+    delete from tbs_pl_role_fun
+    where RF_ID in 
+    <foreach collection="rfIds" index="index" item="item" open="(" separator="," close=")">
+           #{item}       
+     </foreach>
+  </delete>
+  
+  <delete id="batchDelByRoleIds" parameterType="java.lang.String" >
+    delete from tbs_pl_role_fun
+    where ROLE_ID in 
+    <foreach collection="roleIds" index="index" item="item" open="(" separator="," close=")">
+           #{item}       
+     </foreach>
+  </delete>
+</mapper>

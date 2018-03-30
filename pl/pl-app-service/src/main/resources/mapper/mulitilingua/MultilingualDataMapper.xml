@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.multilingual.dao.MultilingualDataMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.multilingual.entity.MultilingualData" >
+    <id column="MU_DATA_ID" property="muDataId" jdbcType="CHAR" />
+    <result column="MU_ID" property="muId" jdbcType="CHAR" />
+    <result column="LANG_KEY_ID" property="langKeyId" jdbcType="CHAR" />
+    <result column="KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+    <result column="SHOW_VALUE" property="showValue" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="GridVo" type="com.robustel.pl.app.multilingual.vo.MultilingualDataVo" >
+  	<id column="LANG_KEY_ID" property="langKeyId" jdbcType="CHAR" />
+    <result column="KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+    <result column="GP_CODE" property="gpCode" jdbcType="VARCHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="KEY_TYPE" property="keyType" jdbcType="VARCHAR" />
+    <result column="DEFAULT_VALUE" property="defaultValue" jdbcType="VARCHAR" />
+    <result column="KEY_DESC" property="keyDesc" jdbcType="VARCHAR" />
+    <result column="MU_DATA_ID" property="muDataId" jdbcType="CHAR" />
+    <result column="MU_ID" property="muId" jdbcType="CHAR" />
+    <result column="SHOW_VALUE" property="showValue" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    MU_DATA_ID, MU_ID, LANG_KEY_ID, KEY_CODE, SHOW_VALUE
+  </sql>
+
+  <delete id="deleteByLangeKeyId" parameterType="java.lang.String" >
+    delete from tbs_pl_multilingual_data
+    where LANG_KEY_ID = #{langeKeyId,jdbcType=CHAR}
+  </delete>
+  
+  <select id="getMulDatas" resultMap="BaseResultMap" parameterType="com.robustel.pl.app.multilingual.entity.MultilingualData" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_multilingual_data
+    where 1 = 1
+    <if test="muId != null" >
+      and MU_ID = #{muId,jdbcType=CHAR}
+    </if>
+    <if test="langKeyId != null" >
+      and LANG_KEY_ID = #{langKeyId,jdbcType=CHAR}
+    </if>
+    <if test="keyCode != null" >
+      and KEY_CODE like concat('%',  #{keyCode,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="showValue != null" >
+      and SHOW_VALUE like concat('%',  #{showValue,jdbcType=VARCHAR}, '%')
+    </if>
+  </select>
+  
+  <select id="getMulDatas4Cof" resultMap="GridVo" parameterType="java.util.Map" >
+    SELECT lk.LANG_KEY_ID, lk.KEY_CODE, lk.GP_CODE, lk.APP_ID, lk.DEFAULT_VALUE, lk.KEY_DESC, lk.KEY_TYPE, md.MU_DATA_ID, md.MU_ID, md.SHOW_VALUE 
+	FROM tbs_pl_language_key lk 
+	LEFT JOIN (
+		SELECT re.MU_DATA_ID, re.MU_ID, re.LANG_KEY_ID, re.KEY_CODE, re.SHOW_VALUE
+		FROM tbs_pl_multilingual_data re
+		WHERE re.MU_ID = #{muId,jdbcType=CHAR}
+	) md ON lk.LANG_KEY_ID = md.LANG_KEY_ID 
+	WHERE 1 = 1 AND lk.APP_ID = #{appId,jdbcType=CHAR}
+	<if test="keyword != null">
+		AND (
+			lk.KEY_CODE LIKE concat('%',  #{keyword,jdbcType=VARCHAR}, '%') OR 
+			lk.DEFAULT_VALUE LIKE concat('%',  #{keyword,jdbcType=VARCHAR}, '%') OR 
+			lk.KEY_DESC LIKE concat('%',  #{keyword,jdbcType=VARCHAR}, '%') OR 
+			lk.GP_CODE LIKE concat('%',  #{keyword,jdbcType=VARCHAR}, '%') OR 
+			md.SHOW_VALUE LIKE concat('%',  #{keyword,jdbcType=VARCHAR}, '%')
+		)
+    </if>
+    <if test="gpCode != null" >
+      and lk.GP_CODE = #{gpCode,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <select id="queryCofsAndDatas" resultType="java.util.Map" parameterType="java.lang.String" >
+    SELECT mc.MULTILINGUAL_NAME AS multilingualName, md.SHOW_VALUE AS showValue, md.KEY_CODE AS keyCode, md.LANG_KEY_ID AS langKeyId
+	FROM tbs_pl_multilingual_data md
+	JOIN tbs_pl_multilingual_cof mc ON md.MU_ID = mc.MU_ID
+	WHERE mc.APP_ID = #{appId,jdbcType=CHAR}
+  </select>
+  
+  <select id="selectByMuIdAndKeyCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_multilingual_data
+    where MU_ID = #{muId,jdbcType=CHAR} and KEY_CODE = #{keyCode,jdbcType=VARCHAR}
+  </select>
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.dictionary.dao.DictionaryGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.dictionary.entity.DictionaryGroup" >
+    <id column="DIC_GP_ID" property="dicGpId" jdbcType="CHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="CODE" property="code" jdbcType="VARCHAR" />
+    <result column="GP_DESC" property="gpDesc" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="PARENT_DIC_GP_ID" property="parentDicGpId" jdbcType="CHAR" />
+    <result column="LG_NAME_CODE" property="lgNameCode" jdbcType="VARCHAR" />
+    <result column="LG_DESC_CODE" property="lgDescCode" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="CHAR" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="DIC_LEVEL" property="dicLevel" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DIC_GP_ID, NAME, APP_ID, CODE, GP_DESC, TYPE, PARENT_DIC_GP_ID, LG_NAME_CODE, LG_DESC_CODE, 
+    CREATE_TIME, CREATE_USER_ID, CREATER, DIC_LEVEL
+  </sql>
+
+  <select id="queryDicList2Group" resultType="java.util.HashMap" parameterType="com.robustel.pl.app.dictionary.entity.DictionaryGroup" >
+    SELECT dic.DIC_ID, dic.DIC_GP_ID, dic.NAME, dic.CODE, dic.PARENT_ID, dic.LG_NAME_CODE, dic.LG_DESC_CODE, dic.DIC_DESC, dic.SHOW_ORDER, dic.DIC_LEVEL, dic.EXPAND1, dic.EXPAND2, dic.CREATER, dic.CREATE_USER_ID, dic.CREATE_TIME, dic.UPDATE_TIME 
+	FROM tbs_pl_dictionary dic
+	LEFT JOIN tbs_pl_dictionary_group dicGp ON dic.DIC_GP_ID = dicGp.DIC_GP_ID AND dicGp.APP_ID = #{appId,jdbcType=VARCHAR}
+	WHERE 1 = 1
+    <if test="dicGpId != null">
+	   and dicGp.DIC_GP_ID = #{dicGpId,jdbcType=VARCHAR}
+    </if>
+    <if test="code != null" >
+      and dicGp.CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    order by dic.SHOW_ORDER
+  </select>
+  
+  <select id="queryDgByNameOrCodeInApp" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_dictionary_group
+    where APP_ID = #{appId,jdbcType=CHAR} and ( 1 != 1
+    <if test="name != null" >
+      OR NAME = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="code != null" >
+      OR CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    )
+    limit 0,1
+  </select>
+  
+  <select id="judgeUpdateWhetherExists" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_dictionary_group
+    where APP_ID = #{appId,jdbcType=CHAR} and DIC_GP_ID != #{dicGpId,jdbcType=VARCHAR} and ( 1 != 1
+    <if test="name != null" >
+      OR NAME = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="code != null" >
+      OR CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    )
+    limit 0,1
+  </select>
+</mapper>

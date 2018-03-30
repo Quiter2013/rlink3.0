@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.menu.dao.AppMenuMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.menu.entity.AppMenu" >
+    <id column="MENU_ID" property="menuId" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="MENU_NAME" property="menuName" jdbcType="VARCHAR" />
+    <result column="MENU_NAME_LANGUAGE_KEY" property="menuNameLanguageKey" jdbcType="VARCHAR" />
+    <result column="MENU_CODE" property="menuCode" jdbcType="VARCHAR" />
+    <result column="MENU_TYPE" property="menuType" jdbcType="VARCHAR" />
+    <result column="MENU_DESC" property="menuDesc" jdbcType="VARCHAR" />
+    <result column="LOAD_RES" property="loadRes" jdbcType="VARCHAR" />
+    <result column="LOAD_PARAM" property="loadParam" jdbcType="VARCHAR" />
+    <result column="SHOW_WAY" property="showWay" jdbcType="VARCHAR" />
+    <result column="SHOW_ORDER" property="showOrder" jdbcType="INTEGER" />
+    <result column="PARENT_ID" property="parentId" jdbcType="CHAR" />
+    <result column="OPEN_CLOSE_STATE" property="openCloseState" jdbcType="CHAR" />
+    <result column="EXPAND_ICON" property="expandIcon" jdbcType="VARCHAR" />
+    <result column="FOLD_ICON" property="foldIcon" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MENU_ID, APP_ID, MENU_NAME, MENU_NAME_LANGUAGE_KEY, MENU_CODE, MENU_TYPE, MENU_DESC, LOAD_RES, LOAD_PARAM, 
+    SHOW_WAY, SHOW_ORDER, PARENT_ID, OPEN_CLOSE_STATE, EXPAND_ICON, FOLD_ICON,CREATE_TIME,CREATER,CREATER_ID
+  </sql>
+
+  <insert id="batchInsert" useGeneratedKeys="true" parameterType="java.util.List">
+  	insert into tbs_pl_app_menu (MENU_ID, APP_ID, MENU_NAME, MENU_NAME_LANGUAGE_KEY,
+      MENU_CODE, MENU_TYPE, MENU_DESC, LOAD_RES, LOAD_PARAM, SHOW_WAY, 
+      SHOW_ORDER, PARENT_ID, OPEN_CLOSE_STATE, EXPAND_ICON, FOLD_ICON,
+      CREATE_TIME,CREATER,CREATER_ID) values 
+     <foreach collection="menus" item="menu" index="index" separator=",">
+	   (#{menu.menuId,jdbcType=CHAR}, #{menu.appId,jdbcType=CHAR}, 
+	   		#{menu.menuName,jdbcType=VARCHAR}, #{menuNameLanguageKey,jdbcType=VARCHAR},
+	      #{menu.menuCode,jdbcType=VARCHAR}, #{menu.menuType,jdbcType=VARCHAR}, 
+	      #{menu.menuDesc,jdbcType=VARCHAR}, #{menu.loadRes,jdbcType=VARCHAR}, 
+	      #{menu.loadParam,jdbcType=VARCHAR}, #{menu.showWay,jdbcType=VARCHAR}, 
+	      #{menu.showOrder,jdbcType=INTEGER}, #{menu.parentId,jdbcType=CHAR}, 
+	      #{menu.openCloseState,jdbcType=CHAR}, 
+	      #{menu.expandIcon,jdbcType=VARCHAR}, #{menu.foldIcon,jdbcType=VARCHAR},
+	      #{createTime,jdbcType=BIGINT}, #{creater,jdbcType=VARCHAR}, #{createrId,jdbcType=CHAR})
+     </foreach>
+  </insert>
+
+  <select id="queryMenuList2App" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_app_menu
+    where APP_ID = #{appId}
+    <if test="parentId != null" >
+      and PARENT_ID = #{parentId,jdbcType=CHAR}
+    </if>
+    order by SHOW_ORDER
+  </select>
+  
+   <select id="queryMenuList2MenuManage" resultMap="BaseResultMap" parameterType="com.robustel.pl.app.menu.entity.AppMenu" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from tbs_pl_app_menu
+	   where 1 = 1
+	   <if test="appId != null" >
+        and APP_ID = #{appId,jdbcType=CHAR}
+      </if>
+      <if test="menuName != null" >
+        and MENU_NAME like concat('%', #{menuName, jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="showWay != null" >
+        and SHOW_WAY = #{showWay,jdbcType=VARCHAR}
+      </if>
+      <if test="parentId != null" >
+        and PARENT_ID = #{parentId,jdbcType=CHAR}
+      </if>
+      <if test="openCloseState != null" >
+        and OPEN_CLOSE_STATE = #{openCloseState,jdbcType=CHAR}
+      </if>
+      <if test="menuType != null" >
+        and MENU_TYPE = #{menuType,jdbcType=VARCHAR}
+      </if>
+      <if test="keyword != null">
+        and (
+        	MENU_NAME like concat('%', #{keyword, jdbcType=VARCHAR}, '%') OR
+        	MENU_CODE like concat('%', #{keyword, jdbcType=VARCHAR}, '%') 
+        )
+      </if>
+      order by SHOW_ORDER
+  </select>
+  
+   <select id="queryMenuList2Loginer" resultMap="BaseResultMap" parameterType="java.lang.String" >
+	   SELECT DISTINCT rmenu.MENU_ID,rmenu.APP_ID,rmenu.MENU_NAME,rmenu.MENU_CODE,rmenu.MENU_TYPE,rmenu.MENU_DESC,
+				rmenu.LOAD_RES,rmenu.LOAD_PARAM,rmenu.SHOW_WAY,rmenu.SHOW_ORDER,rmenu.PARENT_ID,
+				rmenu.OPEN_CLOSE_STATE,rmenu.EXPAND_ICON,rmenu.FOLD_ICON 
+		FROM (
+			SELECT menu.MENU_ID,menu.APP_ID,menu.MENU_NAME,menu.MENU_CODE,menu.MENU_TYPE,menu.MENU_DESC,
+				menu.LOAD_RES,menu.LOAD_PARAM,menu.SHOW_WAY,menu.SHOW_ORDER,menu.PARENT_ID,
+				menu.OPEN_CLOSE_STATE,menu.EXPAND_ICON,menu.FOLD_ICON 
+			FROM (
+				SELECT DISTINCT gr.ROLE_ID
+				FROM (
+					SELECT gm.GROUP_ID
+					FROM tbs_pl_group_member gm
+					LEFT JOIN tbs_pl_group_info gi ON gm.GROUP_ID = gi.GROUP_ID
+					WHERE (gm.USER_ID = #{userId,jdbcType=VARCHAR} AND gi.ROOT_GROUP_ID = #{rootGroupId,jdbcType=VARCHAR})
+					OR gi.GROUP_ID = #{rootGroupId,jdbcType=VARCHAR}
+				) gp
+				LEFT JOIN tbs_pl_group_role gr ON gp.GROUP_ID = gr.GROUP_ID
+			) role
+			LEFT JOIN tbs_pl_role_menu rm ON role.ROLE_ID = rm.ROLE_ID
+			LEFT JOIN tbs_pl_app_menu menu ON rm.MENU_ID = menu.MENU_ID
+			WHERE menu.MENU_ID IS NOT NULL
+			UNION ALL
+			SELECT menu.MENU_ID,menu.APP_ID,menu.MENU_NAME,menu.MENU_CODE,menu.MENU_TYPE,menu.MENU_DESC,
+				menu.LOAD_RES,menu.LOAD_PARAM,menu.SHOW_WAY,menu.SHOW_ORDER,menu.PARENT_ID,
+				menu.OPEN_CLOSE_STATE,menu.EXPAND_ICON,menu.FOLD_ICON 
+			FROM tbs_pl_user_role ur
+			LEFT JOIN tbs_pl_role_menu rm ON ur.ROLE_ID = rm.ROLE_ID
+			LEFT JOIN tbs_pl_app_menu menu ON rm.MENU_ID = menu.MENU_ID
+			LEFT JOIN tbs_pl_role_info ri ON ur.ROLE_ID = ri.ROLE_ID
+			LEFT JOIN tbs_pl_group_info gi ON ri.APP_ID = gi.APP_ID
+			WHERE gi.GROUP_ID = #{rootGroupId,jdbcType=VARCHAR} AND ur.USER_ID = #{userId,jdbcType=VARCHAR}
+		) rmenu
+		where rmenu.MENU_ID is not null 
+      order by rmenu.SHOW_ORDER
+  </select>
+</mapper>

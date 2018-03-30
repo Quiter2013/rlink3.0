@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.menu.dao.FunModelMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.menu.entity.FunModel" >
+    <id column="MODEL_ID" property="modelId" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="MODEL_DESC" property="modelDesc" jdbcType="VARCHAR" />
+    <result column="RES_PATH" property="resPath" jdbcType="VARCHAR" />
+    <result column="RES_PARAM" property="resParam" jdbcType="VARCHAR" />
+    <result column="NAME_KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="FunModelResVoResult" type="com.robustel.pl.app.menu.vo.FunModelResVo" >
+    <id column="MODEL_ID" property="modelId" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="MODEL_DESC" property="modelDesc" jdbcType="VARCHAR" />
+    <result column="RES_PATH" property="resPath" jdbcType="VARCHAR" />
+    <result column="RES_PARAM" property="resParam" jdbcType="VARCHAR" />
+    <result column="NAME_KEY_CODE" property="keyCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MODEL_ID, APP_ID, NAME, MODEL_DESC, RES_PATH, RES_PARAM, NAME_KEY_CODE
+  </sql>
+  <insert id="batchInsert" parameterType="java.util.List" >
+  	<selectKey resultType="long" keyProperty="id" order="AFTER">  
+        SELECT LAST_INSERT_ID()  
+    </selectKey>
+    insert into tbs_pl_fun_model (MODEL_ID, APP_ID, NAME, MODEL_DESC, RES_PATH, RES_PARAM, NAME_KEY_CODE) values 
+    <foreach collection="models" item="model" index="index" separator=",">
+     (#{model.modelId,jdbcType=CHAR}, #{model.appId,jdbcType=CHAR}, #{model.name,jdbcType=VARCHAR}, 
+	     #{model.modelDesc,jdbcType=VARCHAR}, #{model.resPath,jdbcType=VARCHAR}, 
+	     #{model.resParam,jdbcType=VARCHAR}, #{model.keyCode,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <select id="queryList2ModelManage" resultMap="FunModelResVoResult" parameterType="com.robustel.pl.app.menu.entity.FunModel" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_fun_model
+    where 1 = 1
+    <if test="appId != null" >
+      and APP_ID = #{appId,jdbcType=CHAR}
+    </if>
+    <if test="name != null" >
+      and NAME like concat('%',#{name,jdbcType=VARCHAR},'%') 
+    </if>
+    <if test="keyword != null">
+      and (
+      	NAME like concat('%',#{keyword,jdbcType=VARCHAR},'%') OR
+      	MODEL_DESC like concat('%',#{keyword,jdbcType=VARCHAR},'%') 
+      )
+    </if>
+  </select>
+</mapper>

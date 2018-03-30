@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.role.dao.RoleInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.role.entity.RoleInfo" >
+    <id column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="ROLE_NAME_KEY_CODE" property="roleNameKeyCode" jdbcType="VARCHAR" />
+    <result column="ROLE_DESC" property="roleDesc" jdbcType="VARCHAR" />
+    <result column="ROLE_DESC_KEY_CODE" property="roleDescKeyCode" jdbcType="VARCHAR" />
+    <result column="SCOPE_TYPE" property="scopeType" jdbcType="VARCHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="BIGINT" />
+    <result column="UPDATER" property="updater" jdbcType="CHAR" />
+    <result column="BELONG_ORG_ID" property="belongOrdId" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROLE_ID, ROLE_NAME, ROLE_DESC, SCOPE_TYPE, APP_ID, CREATER_ID, CREATER, CREATE_TIME, 
+    UPDATE_TIME, UPDATER, BELONG_ORG_ID,ROLE_NAME_KEY_CODE,ROLE_DESC_KEY_CODE
+  </sql>
+
+  <select id="queryRoles" resultType="java.util.Map" parameterType="com.robustel.pl.app.role.vo.RoleInfoVo">
+  	SELECT ROLE_ID,ROLE_NAME,ROLE_NAME_KEY_CODE,ROLE_DESC,ROLE_DESC_KEY_CODE,SCOPE_TYPE,APP_ID,CREATER_ID,CREATER,CREATE_TIME,UPDATE_TIME,UPDATER
+	FROM tbs_pl_role_info
+	WHERE 1 = 1
+	<if test="roleName != null">
+		AND ROLE_NAME LIKE CONCAT('%', #{roleName,jdbcType=VARCHAR}, '%')
+	</if> 
+	<if test="scopeType != null">
+		AND (SCOPE_TYPE = #{scopeType,jdbcType=VARCHAR} OR SCOPE_TYPE = '2')
+	</if> 
+	<if test="appId != null">
+		AND APP_ID = #{appId,jdbcType=CHAR}
+	</if>
+	<if test="belongOrdId != null">
+		AND BELONG_ORG_ID = #{belongOrdId,jdbcType=CHAR}
+	</if>
+	<if test="keyword != null">
+		AND ROLE_NAME LIKE CONCAT('%', #{keyword,jdbcType=VARCHAR}, '%')
+	</if>
+	order by CREATE_TIME desc
+  </select>
+  
+  <select id="selectByAppIdAndRoleNameAndRoleId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_role_info
+    where APP_ID = #{appId,jdbcType=CHAR} and ROLE_NAME = #{roleName,jdbcType=VARCHAR}
+	<if test="roleId != null">
+		AND ROLE_ID != #{roleId,jdbcType=CHAR}
+	</if>
+  </select>
+  
+  <select id="selectSystemRoleByAppIdAndRoleName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_role_info
+    where APP_ID = #{appId,jdbcType=CHAR} and ROLE_NAME = #{roleName,jdbcType=VARCHAR} and SCOPE_TYPE = '0'
+  </select>
+  
+  <select id="selectSystemRoleByCreaterId" resultMap="BaseResultMap" parameterType="com.robustel.pl.app.role.vo.RoleInfoVo" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_role_info
+    WHERE SCOPE_TYPE = '0'
+	<if test="roleName != null">
+		AND ROLE_NAME LIKE CONCAT('%', #{roleName,jdbcType=VARCHAR}, '%')
+	</if> 
+	<if test="scopeType != null">
+		AND (SCOPE_TYPE = #{scopeType,jdbcType=VARCHAR} OR SCOPE_TYPE = '2')
+	</if> 
+	<if test="appId != null">
+		AND APP_ID = #{appId,jdbcType=CHAR}
+	</if>
+	<if test="belongOrdId != null">
+		AND BELONG_ORG_ID = #{belongOrdId,jdbcType=CHAR}
+	</if>
+	<if test="keyword != null">
+		AND ROLE_NAME LIKE CONCAT('%', #{keyword,jdbcType=VARCHAR}, '%')
+	</if>
+	<if test="createrId != null">
+		AND CREATER_ID = #{createrId,jdbcType=CHAR}
+	</if>
+	order by CREATE_TIME desc
+  </select>
+</mapper>

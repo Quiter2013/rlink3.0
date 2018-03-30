@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.role.dao.GroupRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.role.entity.GroupRole" >
+    <id column="GROUP_ROLE_ID" property="groupRoleId" jdbcType="CHAR" />
+    <result column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER_ID" property="createrId" jdbcType="CHAR" />
+    <result column="CREATER_NAME" property="createrName" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="BIGINT" />
+    <result column="UPDATER" property="updater" jdbcType="CHAR" />
+  </resultMap>
+  
+  <resultMap id="GroupRoleVo" type="com.robustel.pl.app.group.vo.GroupRoleVo" >
+  	<id column="GROUP_ROLE_ID" property="groupRoleId" jdbcType="CHAR" />
+    <result column="GROUP_ID" property="groupId" jdbcType="CHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="CHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="ROLE_DESC" property="roleDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    GROUP_ROLE_ID, GROUP_ID, ROLE_ID, CREATE_TIME, CREATER_ID, CREATER_NAME, UPDATE_TIME, 
+    UPDATER
+  </sql>
+
+  <select id="getRolesByGroupId" resultMap="GroupRoleVo" parameterType="java.lang.String">
+	SELECT gr.GROUP_ROLE_ID,gr.GROUP_ID,gr.ROLE_ID,ri.ROLE_NAME,ri.ROLE_DESC
+	FROM tbs_pl_group_role gr
+	LEFT JOIN tbs_pl_role_info ri ON ri.ROLE_ID = gr.ROLE_ID
+	WHERE gr.GROUP_ID = #{groupId,jdbcType=CHAR}
+	<if test="roleName != null">
+		and ri.ROLE_NAME like concat('%', #{roleName,jdbcType=VARCHAR},'%')
+	</if>
+  </select>
+  
+  <select id="getRolesNotInGroup" resultMap="GroupRoleVo" parameterType="java.lang.String">
+	SELECT ri.ROLE_ID,ri.ROLE_NAME,ri.ROLE_DESC
+	FROM tbs_pl_role_info ri
+	WHERE ri.ROLE_ID NOT IN (
+		SELECT gr.ROLE_ID
+		FROM tbs_pl_group_role gr
+		WHERE gr.GROUP_ID = #{groupId,jdbcType=CHAR}
+	) AND ri.APP_ID = #{appId,jdbcType=CHAR}
+  </select>
+  
+  <select id="getGroupsByRoleId" resultType="java.util.Map" parameterType="java.lang.String">
+  	SELECT gi.GROUP_ID,gi.APP_ID,gi.GROUP_NAME,gi.GROUP_CODE,gi.GROUP_SHORT_NAME,gi.GROUP_TYPE,
+		gi.BIZ_TYPE,gi.PARENT_GROUP_ID,gi.ROOT_GROUP_ID,gi.GROUP_FULL_NAME,gi.GROUP_FULL_CODE,
+		gi.GROUP_FULL_ID,gi.GROUP_LOGO,gi.GROUP_BG_IMG,gi.SHOW_ORDER,gi.GP_DESC,gi.STATE,
+		gi.SUPER_ADMIN_ID,gi.SUPER_ADMIN,gi.COUNTRY,gi.COUNTRY_CODE,gi.PROVINCE,gi.PROVINCE_CODE,
+		gi.CITY,gi.CITY_CODE,gi.DETAIL_ADDRESS,gi.LONGITUDE,gi.LATITUDE,gi.CREATE_USER_ID,
+		gi.CREATE_TIME,gi.CREATER 
+	FROM tbs_pl_group_role gr
+	LEFT JOIN tbs_pl_group_info gi ON gr.GROUP_ID = gi.GROUP_ID
+	WHERE gr.ROLE_ID = #{roleId,jdbcType=CHAR}
+	<if test="groupName != null">
+		and gi.GROUP_NAME like concat('%', #{groupName,jdbcType=VARCHAR},'%')
+	</if>
+  </select>
+</mapper>

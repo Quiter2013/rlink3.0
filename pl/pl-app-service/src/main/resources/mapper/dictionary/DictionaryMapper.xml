@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.dictionary.dao.DictionaryMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.dictionary.entity.Dictionary" >
+    <id column="DIC_ID" property="dicId" jdbcType="CHAR" />
+    <result column="DIC_GP_ID" property="dicGpId" jdbcType="CHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="CODE" property="code" jdbcType="VARCHAR" />
+    <result column="PARENT_ID" property="parentId" jdbcType="CHAR" />
+    <result column="LG_NAME_CODE" property="lgNameCode" jdbcType="VARCHAR" />
+    <result column="LG_DESC_CODE" property="lgDescCode" jdbcType="VARCHAR" />
+    <result column="DIC_DESC" property="dicDesc" jdbcType="VARCHAR" />
+    <result column="SHOW_ORDER" property="showOrder" jdbcType="INTEGER" />
+    <result column="DIC_LEVEL" property="dicLevel" jdbcType="VARCHAR" />
+    <result column="EXPAND1" property="expand1" jdbcType="VARCHAR" />
+    <result column="EXPAND2" property="expand2" jdbcType="VARCHAR" />
+    <result column="CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DIC_ID, DIC_GP_ID, NAME, CODE, PARENT_ID, LG_NAME_CODE, LG_DESC_CODE, DIC_DESC, SHOW_ORDER, 
+    DIC_LEVEL, EXPAND1, EXPAND2, CREATER, CREATE_USER_ID, CREATE_TIME, UPDATE_TIME
+  </sql>
+  
+  <sql id="Base_Column_EN_List">
+      dic.DIC_ID dicId, dic.DIC_GP_ID dicGpId, dic.NAME name, dic.CODE code, PARENT_ID parentId, dic.LG_NAME_CODE lgNameCode,
+    dic.LG_DESC_CODE lgDescCode, dic.DIC_DESC dicDesc, dic.SHOW_ORDER showOrder, 
+    dic.DIC_LEVEL dicLevel, dic.EXPAND1 expand1, dic.EXPAND2 expand2, dic.CREATER creater, dic.CREATE_USER_ID createUserId, 
+   dic.CREATE_TIME createTime, dic.UPDATE_TIME updateTime
+  </sql>
+  
+  <select id="queryDicListByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String">
+       select 
+	    <include refid="Base_Column_List" />
+	    from tbs_pl_dictionary
+	    where DIC_GP_ID = #{dicGpId,jdbcType=CHAR}
+  </select>
+  
+  <select id="queryDictionaryByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+       select 
+	    <include refid="Base_Column_EN_List" />
+	    from tbs_pl_dictionary dic left join tbs_pl_dictionary_group g on dic.DIC_GP_ID = g.DIC_GP_ID
+	    where g.CODE = #{code,jdbcType=VARCHAR} 
+  </select>
+
+  
+  <delete id="deleteByDictionaryGroupId" parameterType="java.lang.String" >
+		delete from tbs_pl_dictionary
+		where DIC_GP_ID = #{dictionaryGroupId,jdbcType=CHAR}
+  </delete>
+  
+  <select id="queryList" resultType="java.util.HashMap" parameterType="com.robustel.pl.app.dictionary.entity.Dictionary" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_dictionary
+    where 1 = 1
+    <if test="dicGpId != null" >
+      and DIC_GP_ID = #{dicGpId,jdbcType=CHAR}
+    </if>
+    <if test="name != null" >
+      and NAME like concat ('%', #{name,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="code != null" >
+      and CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="parentId != null" >
+      and PARENT_ID = #{parentId,jdbcType=CHAR}
+    </if>
+    <if test="creater != null" >
+      and CREATER = #{creater,jdbcType=VARCHAR}
+    </if>
+    order by SHOW_ORDER
+  </select>
+  
+  <select id="queryDicByNameOrCodeInGp" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_dictionary
+    where DIC_GP_ID = #{dicGpId,jdbcType=CHAR} and ( 1 != 1
+    <if test="name != null" >
+      OR NAME = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="code != null" >
+      OR CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    )
+    limit 0,1
+  </select>
+  
+  <select id="judgeUpdateWhetherExists" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_dictionary
+    where DIC_GP_ID = #{dicGpId,jdbcType=CHAR} and DIC_ID != #{dicId,jdbcType=CHAR} and ( 1 != 1
+    <if test="name != null" >
+      OR NAME = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="code != null" >
+      OR CODE = #{code,jdbcType=VARCHAR}
+    </if>
+    )
+    limit 0,1
+  </select>
+</mapper>

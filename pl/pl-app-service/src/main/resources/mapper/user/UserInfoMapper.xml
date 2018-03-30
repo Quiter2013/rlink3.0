@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.robustel.pl.app.user.dao.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.robustel.pl.app.user.entity.UserInfo" >
+    <id column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
+    <result column="LOGIN_PWD" property="loginPwd" jdbcType="CHAR" />
+    <result column="EMAIL" property="email" jdbcType="CHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER" property="creater" jdbcType="CHAR" />
+  </resultMap>
+  
+  <resultMap id="PlUserResultMap" type="com.robustel.pl.app.user.vo.PlUserVo" >
+    <id column="USER_ID" property="userId" jdbcType="CHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
+    <result column="EMAIL" property="email" jdbcType="CHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="CREATER" property="creater" jdbcType="CHAR" />
+    <result column="APP_ID" property="appId" jdbcType="CHAR" />
+    <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+    <result column="IS_DEFAULT" property="isDefault" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    USER_ID, USER_NAME, LOGIN_ACCOUNT, LOGIN_PWD, EMAIL, STATE, CREATE_TIME, CREATER
+  </sql>
+
+  <select id="queryUserByCompanyId" resultMap="BaseResultMap" parameterType="java.lang.String">
+      select user_.* from  tbs_pl_user_base_info user_ 
+	LEFT JOIN tbs_pl_group_member member on user_.USER_ID = member.USER_ID
+	where member.GROUP_ID = #{companyId,jdbcType=CHAR};
+  </select>
+  
+  <select id="queryUserByIds" resultMap="BaseResultMap" parameterType="java.util.List">
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_user_base_info
+    where USER_ID in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+           #{item}       
+     </foreach>
+  </select>
+
+  <update id="changePassword" parameterType="java.lang.String" >
+    update tbs_pl_user_base_info
+    set 
+      LOGIN_PWD = #{newPassword,jdbcType=CHAR}
+    where USER_ID = #{userId,jdbcType=CHAR} and LOGIN_PWD = #{oldPassword,jdbcType=CHAR}
+  </update>
+  
+  <select id="verifyUnique" resultType="java.lang.Long" parameterType="com.robustel.pl.app.user.entity.UserInfo" >
+    select count(USER_ID)
+    from tbs_pl_user_base_info
+    where LOGIN_ACCOUNT = #{loginAccount,jdbcType=VARCHAR}
+    <if test="userId != null" >
+      and USER_ID != #{userId,jdbcType=CHAR}
+    </if>
+  </select>
+  
+  <select id="login" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_user_base_info
+    where LOGIN_ACCOUNT = #{loginAccount,jdbcType=VARCHAR} and LOGIN_PWD = #{password,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryList2RLink" resultMap="BaseResultMap" parameterType="com.robustel.pl.app.user.vo.ParamUserVo" >
+    SELECT DISTINCT ubi.USER_ID,ubi.USER_NAME,ubi.LOGIN_ACCOUNT,ubi.EMAIL,ubi.STATE,ubi.CREATE_TIME,ui.USER_NAME as CREATER
+	FROM tbs_pl_group_member gm
+	LEFT JOIN tbs_pl_user_base_info ubi ON gm.USER_ID = ubi.USER_ID
+	LEFT JOIN tbs_pl_user_base_info ui on ubi.CREATER = ui.USER_ID
+	WHERE ubi.USER_ID IS NOT NULL
+	<if test="groupIds != null">
+		AND gm.GROUP_ID IN 
+		<foreach collection="groupIds" item="item" open="(" separator="," close=")">  
+			#{item}
+	    </foreach>
+	</if>
+	<if test="userName != null" >
+      and ubi.USER_NAME like concat('%', #{userName,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="loginAccount != null" >
+      and ubi.LOGIN_ACCOUNT like concat('%', #{loginAccount,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="state != null" >
+      and ubi.STATE = #{state,jdbcType=VARCHAR}
+    </if>
+    <if test="keyword != null">
+    	and (
+    		ubi.USER_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or 
+    		ubi.LOGIN_ACCOUNT like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+    	)
+    </if>
+    order by ubi.CREATE_TIME desc
+  </select>
+  
+  <select id="queryUserList2Pl" resultMap="PlUserResultMap" parameterType="com.robustel.pl.app.user.vo.ParamUserVo" >
+    select distinct ub.USER_ID, ub.USER_NAME, ub.LOGIN_ACCOUNT, ub.LOGIN_PWD, ub.EMAIL, ub.STATE, ub.CREATE_TIME, ub.CREATER
+    from tbs_pl_user_base_info ub
+    where 1 = 1
+    <if test="userName != null" >
+      and ub.USER_NAME like concat('%', #{userName,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="loginAccount != null" >
+      and ub.LOGIN_ACCOUNT like concat('%', #{loginAccount,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="state != null" >
+      and ub.STATE = #{state,jdbcType=VARCHAR}
+    </if>
+    <if test="keyword != null">
+    	and (
+    		ub.USER_NAME like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or 
+    		ub.LOGIN_ACCOUNT like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+    	)
+    </if>
+    order by ub.CREATE_TIME desc
+  </select>
+  
+  <select id="queryUserInfoByLoginAccountOrUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbs_pl_user_base_info
+    where 1 = 1 and (1 != 1
+    <if test="loginAccount != null" >
+       OR LOGIN_ACCOUNT = #{loginAccount,jdbcType=VARCHAR}
+    </if>
+    <if test="userName != null" >
+      OR USER_NAME = #{userName,jdbcType=VARCHAR}
+    </if>
+    )
+  </select>
+</mapper>
