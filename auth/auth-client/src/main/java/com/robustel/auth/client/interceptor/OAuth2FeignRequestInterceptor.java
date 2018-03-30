@@ -1,6 +1,6 @@
 package com.robustel.auth.client.interceptor;
 
-import com.robustel.auth.client.context.UserContext;
+import com.robustel.auth.common.context.UserContext;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.springframework.security.core.context.SecurityContext;

@@ -1,4 +1,4 @@
-package com.robustel.auth.client.context;
+package com.robustel.auth.common.context;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

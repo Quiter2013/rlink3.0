@@ -1,6 +1,6 @@
 package com.robustel.auth.client.security.token;
 
-import com.robustel.auth.client.context.UserContext;
+import com.robustel.auth.common.context.UserContext;
 import com.robustel.auth.client.rpc.RestTemplateService;
 import com.robustel.auth.common.constants.SecurityConstants;
 import lombok.Data;
