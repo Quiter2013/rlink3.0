@@ -68,7 +68,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
         Map<String, ZuulRoute> routes = new LinkedHashMap<>();
         List<RouteInfo> results = routeInfoService.queryAllActiveRoutes();
         for (RouteInfo result : results) {
-            if(StringUtils.isEmpty(result.getPath()) || StringUtils.isEmpty(result.getUrl()) ){
+            if(StringUtils.isEmpty(result.getPath()) && StringUtils.isEmpty(result.getUrl()) ){
                 continue;
             }
             ZuulRoute zuulRoute = new ZuulRoute();
