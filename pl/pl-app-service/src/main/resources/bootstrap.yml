@@ -66,6 +66,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://discovery:9761/eureka/
+  instance:
+    metadata-map:
+       configPath: /configuration
 endpoints:
   shutdown:
     enabled: true

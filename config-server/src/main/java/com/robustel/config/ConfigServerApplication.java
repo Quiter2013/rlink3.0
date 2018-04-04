@@ -11,9 +11,9 @@ import org.springframework.cloud.config.server.EnableConfigServer;
  * @Date: Created in 18:31 2018/2/7
  * @Modified By:
  */
-@SpringBootApplication
 @EnableConfigServer
 @EnableDiscoveryClient
+@SpringBootApplication
 public class ConfigServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(ConfigServerApplication.class,args);

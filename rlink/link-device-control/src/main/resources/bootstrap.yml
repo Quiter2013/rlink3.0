@@ -29,6 +29,9 @@ spring:
       testOnReturn: false
       poolPreparedStatements: true
       maxOpenPreparedStatements: 20
+  redis:
+    database: 3
+    host: 172.16.0.104
 mybatis:
   basepackage: com.robustel.link.device.dao
   xmlLocation: classpath:mapper/**/*.xml
@@ -39,15 +42,26 @@ eureka:
 endpoints:
   shutdown:
     enabled: true
-security:
-  oauth2:
-    resource:
+#security:
+ # oauth2:
+  #  resource:
       #id: app-manage
-      token-info-uri: oauth/check_token
-      prefer-token-info: true
-      clientId: app-manage
-      clientSecret: 123456
-feign.hystrix.enabled: false
+   #   token-info-uri: oauth/check_token
+    #  prefer-token-info: true
+     # clientId: app-manage
+     # clientSecret: 123456
+#feign.hystrix.enabled: false
 custom:
   security:
+    oauth2:
+      client:
+        clientId: deviceControl
+        clientSecret: 123456
+        checkTokenEndpointUrl: oauth/check_token
+        authServiceId: auth-server
     ignoredPatterns: static/*
+  redis:
+    cache:
+      enable: true
+      expires:
+        accessToken: 300

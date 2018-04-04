@@ -7,16 +7,25 @@ spring:
     config:
       server:
         native:
-          search-locations: classpath:/properties/
+          search-locations: classpath:/properties
+        prefix: /configuration
   profiles:
     active: native
 eureka:
   client:
     serviceUrl:
       defaultZone: http://discovery:9761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 management:
   security:
     enabled: false
 security:
   basic:
     enabled: false
+info:
+   app.name: config-server
+   company.name: www.robustel.com
+   build.artifactId: $project.artifactId$
+   build.version:  $project.version$

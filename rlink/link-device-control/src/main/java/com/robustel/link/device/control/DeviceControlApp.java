@@ -15,7 +15,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
  */
 @EnableAuthClient
 @EnableCircuitBreaker
-@EnableFeignClients(basePackages = {"com.robustel"})
+@EnableFeignClients(basePackages = {"com.robustel.pl"})
 @SpringBootApplication
 @EnableDiscoveryClient
 public class DeviceControlApp {

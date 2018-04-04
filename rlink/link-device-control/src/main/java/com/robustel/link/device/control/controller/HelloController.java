@@ -1,11 +1,7 @@
 package com.robustel.link.device.control.controller;
 
-import com.robustel.common.web.vo.RtResponse;
-import com.robustel.pl.app.user.entity.UserInfo;
-import com.robustel.pl.app.user.facade.UserInfoFacade;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Author: gaolinlou
@@ -17,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value="/device/control")
 public class HelloController {
 
-    @Autowired
+   /* @Autowired
     private UserInfoFacade userInfoFacade;
 
     @PreAuthorize("hasAuthority('editSysRole')")
@@ -32,5 +28,5 @@ public class HelloController {
     public String saveUser(@RequestBody UserInfo user){
         RtResponse<UserInfo> userInfoRtResponse = userInfoFacade.addUser(user);
         return userInfoRtResponse.getData().getUserName();
-    }
+    }*/
 }
